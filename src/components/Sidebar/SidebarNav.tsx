@@ -38,7 +38,7 @@ export function SidebarNav() {
           Listar obras
         </NavLink>
       </NavSection>
-      <NavSection title="Imagens">
+      {/* <NavSection title="Imagens">
         <NavLink href="#" icon={RiImageAddFill}>
           Adicionar imagens
         </NavLink>
@@ -50,7 +50,7 @@ export function SidebarNav() {
         <NavLink href="#" icon={RiExchangeBoxLine}>
           Alterar ordem de exibição
         </NavLink>
-      </NavSection>
+      </NavSection> */}
     </Stack>
   );
 }
