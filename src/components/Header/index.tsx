@@ -29,7 +29,7 @@ export function Header() {
       as="header"
       w="100%"
       h="20"
-      maxWidth={1480}
+      maxWidth={1600}
       mx="auto"
       mt="4"
       px="6"
@@ -53,32 +53,60 @@ export function Header() {
       <Flex align="center" ml="auto">
         {/* <NotificationsNav /> */}
 
-        <Flex
-          align="center"
-          justify="center"
-          onClick={toggleColorMode}
-          cursor="pointer"
-          bgColor="blue.700"
-          borderRadius={8}
-        >
-          <IconButton
-            aria-label="Change theme"
-            icon={<Icon as={colorMode === 'dark' ? BsMoon : BsSun} />}
-            fontSize="20"
+        {isWideVersion ? (
+          <Flex
+            align="center"
+            justify="center"
+            onClick={toggleColorMode}
+            cursor="pointer"
+            bgColor="blue.700"
+            px="4"
+            pl="2"
+            py="1"
             mr="4"
-            variant="unstyled"
-          />
+            borderRadius={8}
+            color="whiteAlpha.900"
+          >
+            <IconButton
+              aria-label="Change theme"
+              icon={<Icon as={colorMode === 'dark' ? BsMoon : BsSun} />}
+              fontSize="20"
+              mr="1"
+              my="auto"
+              variant="unstyled"
+            />
 
-          {isWideVersion ? (
-            <Text fontSize="14">
-              Modo {colorMode === 'dark' ? 'claro' : 'escuro'}
-            </Text>
-          ) : (
-            <Text fontSize="14">
+            <Text fontSize="14" fontWeight="bold">
               Alternar para modo {colorMode === 'dark' ? 'claro' : 'escuro'}
             </Text>
-          )}
-        </Flex>
+          </Flex>
+        ) : (
+          <Flex
+            align="center"
+            justify="center"
+            onClick={toggleColorMode}
+            cursor="pointer"
+            bgColor="blue.700"
+            pl="1"
+            pr="3"
+            mr="2"
+            borderRadius={8}
+            color="whiteAlpha.900"
+          >
+            <IconButton
+              aria-label="Change theme"
+              icon={<Icon as={colorMode === 'dark' ? BsMoon : BsSun} />}
+              fontSize="16"
+              mr="1"
+              my="auto"
+              variant="unstyled"
+            />
+
+            <Text fontSize="12" fontWeight="bold">
+              {colorMode === 'dark' ? 'Claro' : 'Escuro'}
+            </Text>
+          </Flex>
+        )}
 
         <Profile showProfileData={isWideVersion} />
       </Flex>
