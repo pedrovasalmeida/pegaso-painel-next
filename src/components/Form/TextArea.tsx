@@ -2,10 +2,10 @@ import { forwardRef, ForwardRefRenderFunction } from 'react';
 import { FieldError } from 'react-hook-form';
 
 import {
-  Input as ChakraInput,
+  Textarea as ChakraInput,
   FormLabel,
   FormControl,
-  InputProps as ChakraInputProps,
+  TextareaProps as ChakraInputProps,
   FormErrorMessage,
   useColorModeValue,
 } from '@chakra-ui/react';
@@ -16,7 +16,7 @@ interface InputProps extends ChakraInputProps {
   error?: FieldError;
 }
 
-const InputBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = (
+const TextAreaBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = (
   { name, label, error = null, ...rest },
   ref
 ) => {
@@ -30,11 +30,10 @@ const InputBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = (
         id={name}
         name={name}
         type="email"
-        focusBorderColor="blue.500"
+        focusBorderColor="blue.700"
         bgColor={boxBgColor}
         variant="filled"
         size="lg"
-        ref={ref}
         {...rest}
       />
 
@@ -43,4 +42,4 @@ const InputBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = (
   );
 };
 
-export const Input = forwardRef(InputBase);
+export const TextArea = forwardRef(TextAreaBase);
