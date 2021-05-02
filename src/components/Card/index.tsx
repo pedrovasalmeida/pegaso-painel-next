@@ -30,10 +30,17 @@ export function Card({
       minW="150"
       minH="250"
       bg={boxBgColor}
-      borderRadius="12"
+      borderRadius="8"
       p="4"
     >
-      <Image src="/images/image.jpeg" alt="alguma imagem" maxH="100px" mb="1" />
+      <Image
+        src="/images/image.jpeg"
+        alt="alguma imagem"
+        maxH="150px"
+        mb="1"
+        borderRadius="8"
+        objectFit="cover"
+      />
       <Text
         color={color}
         fontWeight="bold"
