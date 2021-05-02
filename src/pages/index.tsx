@@ -11,10 +11,14 @@ import {
   InputLeftElement,
   Icon,
   Text,
+  useColorMode,
+  IconButton,
+  useColorModeValue,
 } from '@chakra-ui/react';
 
 import { Input } from '../components/Form/Input';
 import { useRouter } from 'next/router';
+import { BsMoon, BsSun } from 'react-icons/bs';
 
 type SignInFormData = {
   email: string;
@@ -27,13 +31,15 @@ const signInFormSchema = yup.object().shape({
 });
 
 export default function SignIn() {
+  const { colorMode, toggleColorMode } = useColorMode();
   const { handleSubmit, register, formState } = useForm({
     resolver: yupResolver(signInFormSchema),
   });
-
   const { errors } = formState;
-
   const router = useRouter();
+
+  const color = useColorModeValue('gray.900', 'gray.50');
+  const bgColor = useColorModeValue('gray.100', 'gray.800');
 
   const handleSignIn: SubmitHandler<SignInFormData> = async ({
     email,
@@ -57,7 +63,26 @@ export default function SignIn() {
         align="center"
         justify="center"
       >
-        <Text color="whiteAlpha.800" fontSize="lg" mb="4">
+        <Flex
+          align="center"
+          justify="center"
+          onClick={toggleColorMode}
+          cursor="pointer"
+          mr="2"
+          mb="2"
+          borderRadius={8}
+          color="whiteAlpha.900"
+        >
+          <IconButton
+            aria-label="Change theme"
+            color={color}
+            icon={<Icon as={colorMode === 'dark' ? BsMoon : BsSun} />}
+            fontSize="16"
+            my="auto"
+            variant="unstyled"
+          />
+        </Flex>
+        <Text fontSize="lg" mb="4">
           Bem-vindo! Faça login para continuar:
         </Text>
 
@@ -69,7 +94,7 @@ export default function SignIn() {
           p={8}
           mx="5"
           borderRadius={8}
-          bg="gray.800"
+          bg={bgColor}
           onSubmit={handleSubmit(handleSignIn)}
         >
           <Stack spacing="4">
@@ -99,7 +124,7 @@ export default function SignIn() {
             Entrar
           </Button>
         </Flex>
-        <Text color="whiteAlpha.800" mt="4" alignSelf="center">
+        <Text mt="4" alignSelf="center">
           Pégaso - 2021 &copy;
         </Text>
       </Flex>
