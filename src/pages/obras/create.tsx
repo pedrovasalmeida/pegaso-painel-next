@@ -17,6 +17,7 @@ import {
   SimpleGrid,
   VStack,
   useColorModeValue,
+  useBreakpointValue,
 } from '@chakra-ui/react';
 
 import { Input } from '../../components/Form/Input';
@@ -84,6 +85,11 @@ export default function UserList() {
     router.push('/users');
   };
 
+  const isWideVersion = useBreakpointValue({
+    base: false,
+    lg: true,
+  });
+
   const boxBgColor = useColorModeValue('gray.100', 'gray.800');
   const color = useColorModeValue('gray.900', 'gray.50');
   const cancelButtonBg = useColorModeValue('gray.200', 'gray.400');
@@ -97,7 +103,7 @@ export default function UserList() {
       <Box h="100vh">
         <Header />
 
-        <Flex w="100%" my="6" maxWidth={1600} mx="auto" px="6">
+        <Flex w="100%" my="6" maxWidth={1600} mx="auto" px="4">
           <Sidebar />
 
           <Box
@@ -156,9 +162,9 @@ export default function UserList() {
               />
             </VStack>
 
-            <Flex mt="8" justify="flex-end">
+            <Flex mt="8" justify={isWideVersion ? 'flex-end' : 'center'}>
               <HStack spacing="4">
-                <Link href="/obras" passHref>
+                <Link href="/dashboard" passHref>
                   <Button
                     as="a"
                     bg={cancelButtonBg}

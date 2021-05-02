@@ -78,10 +78,10 @@ export default function UserList() {
       <Box minH="100vh">
         <Header />
 
-        <Box display="flex" w="100%" my="6" maxWidth={1600} mx="auto" px="6">
+        <Box display="flex" w="100%" my="6" maxWidth={1600} mx="auto" px="4">
           <Sidebar />
 
-          <Flex direction="column" w="90%">
+          <Flex direction="column" w="100%">
             <Heading h="10">Lista de obras:</Heading>
 
             <ListEnterprises projectsToList={cards} showDetailsButton />

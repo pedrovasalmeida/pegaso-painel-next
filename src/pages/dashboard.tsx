@@ -11,6 +11,7 @@ import {
 } from '@chakra-ui/react';
 import Head from 'next/head';
 import { TiPlus } from 'react-icons/ti';
+
 import { Header } from '../components/Header';
 import ListEnterprises from '../components/ListEnterprises';
 import { Sidebar } from '../components/Sidebar';
@@ -32,18 +33,24 @@ export default function Dashboard() {
       <Flex direction="column" minH="100vh">
         <Header />
 
-        <Flex w="100%" maxWidth={1600} my="6" mx="auto" px="6">
+        <Flex w="100%" maxWidth={1600} my="6" mx="auto" px="4">
           <Sidebar />
 
-          <Flex direction="column" w="90%">
+          <Flex direction="column">
             <Heading>Seja bem vindo!</Heading>
 
-            <Flex>
-              <ListEnterprises
-                projectsToList={cards}
-                showDetailsButton
-                showOnlyDetailsButton
-              />
+            <Flex
+              direction="column"
+              w={!isWideVersion ? '100%' : '100%'}
+              align="flex-end"
+            >
+              <Flex>
+                <ListEnterprises
+                  projectsToList={cards}
+                  showDetailsButton
+                  showOnlyDetailsButton
+                />
+              </Flex>
             </Flex>
           </Flex>
         </Flex>
