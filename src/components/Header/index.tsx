@@ -22,6 +22,8 @@ export function Header() {
     lg: true,
   });
 
+  console.log(`breakpoint header: ${isWideVersion}`);
+
   return (
     <Flex
       as="header"
