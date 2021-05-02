@@ -14,6 +14,9 @@ import {
   useColorMode,
   IconButton,
   useColorModeValue,
+  Image,
+  useToast,
+  Box,
 } from '@chakra-ui/react';
 
 import { Input } from '../components/Form/Input';
@@ -37,6 +40,7 @@ export default function SignIn() {
   });
   const { errors } = formState;
   const router = useRouter();
+  const toast = useToast();
 
   const color = useColorModeValue('gray.900', 'gray.50');
   const bgColor = useColorModeValue('gray.100', 'gray.800');
@@ -45,7 +49,17 @@ export default function SignIn() {
     email,
     password,
   }) => {
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    toast({
+      title: 'Credenciais válidas',
+      description: 'Entrando...',
+      status: 'success',
+      duration: 2000,
+      isClosable: true,
+    });
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     router.push('/dashboard');
   };
@@ -63,6 +77,7 @@ export default function SignIn() {
         align="center"
         justify="center"
       >
+        <Image src="/images/pegaso-logo.png" alt="Pégaso" mb="2" />
         <Flex
           align="center"
           justify="center"
