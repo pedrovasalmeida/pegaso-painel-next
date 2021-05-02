@@ -22,7 +22,7 @@ export function Header() {
     lg: true,
   });
 
-  console.log(`breakpoint header: ${isWideVersion}`);
+  console.log(`Breakpoint header: ${isWideVersion}`);
 
   return (
     <Flex
