@@ -11,9 +11,7 @@ import { BsSun, BsMoon } from 'react-icons/bs';
 import { useSidebarDrawer } from '../../contexts/SidebarDrawerContext';
 
 import { Logo } from './Logo';
-import { NotificationsNav } from './NotificationsNav';
 import { Profile } from './Profile';
-import { SeachBox } from './SearchBox';
 
 export function Header() {
   const { onOpen } = useSidebarDrawer();
