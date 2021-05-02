@@ -7,6 +7,7 @@ import {
   DrawerCloseButton,
   DrawerHeader,
   DrawerBody,
+  DrawerFooter,
 } from '@chakra-ui/react';
 import { useSidebarDrawer } from '../../contexts/SidebarDrawerContext';
 
@@ -30,6 +31,9 @@ export function Sidebar() {
             <DrawerBody>
               <SidebarNav />
             </DrawerBody>
+            <DrawerFooter alignSelf="center" color="gray.300">
+              Pégaso - 2021 &copy;
+            </DrawerFooter>
           </DrawerContent>
         </DrawerOverlay>
       </Drawer>
