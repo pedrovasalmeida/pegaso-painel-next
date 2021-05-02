@@ -18,8 +18,9 @@ export default function ListEnterprises({
   return (
     <HStack spacing="6" my="4">
       <SimpleGrid minChildWidth="240px" spacing={['6', '8']} w="100%">
-        {projectsToList.map((project) => (
+        {projectsToList.map((project, index) => (
           <Card
+            key={index}
             isOnlyRemoveBox={isOnlyRemoveBox}
             showDetailsButton={showDetailsButton}
             showOnlyDetailsButton={showOnlyDetailsButton}
