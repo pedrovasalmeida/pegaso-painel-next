@@ -52,6 +52,7 @@ export function Header() {
 
       <Flex align="center" ml="auto">
         {/* <NotificationsNav /> */}
+        <Text>Breakpoint: {String(isWideVersion)}</Text>
 
         {isWideVersion ? (
           <Flex
@@ -108,7 +109,7 @@ export function Header() {
           </Flex>
         )}
 
-        <Profile showProfileData={isWideVersion} />
+        {/* <Profile showProfileData={isWideVersion} /> */}
       </Flex>
     </Flex>
   );
