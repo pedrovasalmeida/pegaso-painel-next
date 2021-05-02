@@ -1,9 +1,9 @@
 import {
+  useBreakpointValue,
   Flex,
   Icon,
   IconButton,
   Text,
-  useBreakpointValue,
   useColorMode,
 } from '@chakra-ui/react';
 import { RiMenuLine } from 'react-icons/ri';
@@ -22,17 +22,15 @@ export function Header() {
     lg: true,
   });
 
-  console.log(`Breakpoint header: ${isWideVersion}`);
-
   return (
     <Flex
       as="header"
       w="100%"
       h="20"
       maxWidth={1600}
-      mx="auto"
       mt="4"
-      px="6"
+      mx="auto"
+      px="4"
       align="center"
     >
       {!isWideVersion && (
@@ -43,17 +41,13 @@ export function Header() {
           mr="2"
           variant="unstyled"
           onClick={onOpen}
-        ></IconButton>
+        />
       )}
 
       <Logo />
 
-      {/* {isWideVersion && <SeachBox />} */}
-
+      {/* <NotificationsNav /> */}
       <Flex align="center" ml="auto">
-        {/* <NotificationsNav /> */}
-        <Text>Breakpoint: {String(isWideVersion)}</Text>
-
         {isWideVersion ? (
           <Flex
             align="center"
@@ -109,7 +103,7 @@ export function Header() {
           </Flex>
         )}
 
-        {/* <Profile showProfileData={isWideVersion} /> */}
+        <Profile showProfileData={isWideVersion} />
       </Flex>
     </Flex>
   );
