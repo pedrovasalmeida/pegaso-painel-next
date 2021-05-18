@@ -5,10 +5,9 @@ import { Box, Flex, Heading } from '@chakra-ui/react';
 import { Header } from '../../components/Header';
 import { Sidebar } from '../../components/Sidebar';
 import ListEnterprises from '../../components/ListEnterprises';
+import ListSort from '../../components/ListSort';
 
-export default function EnterpriseList() {
-  const cards = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
-
+export default function SortEnterprises() {
   return (
     <>
       <Head>
@@ -22,9 +21,9 @@ export default function EnterpriseList() {
           <Sidebar />
 
           <Flex direction="column" w="100%">
-            <Heading h="10">Gerenciar obras</Heading>
+            <Heading h="10">Ordenar obras</Heading>
 
-            <ListEnterprises projectsToList={cards} showDetailsButton />
+            <ListSort />
           </Flex>
         </Box>
       </Box>

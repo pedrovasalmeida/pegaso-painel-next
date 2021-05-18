@@ -24,7 +24,7 @@ import { useRouter } from 'next/router';
 import { BsMoon, BsSun } from 'react-icons/bs';
 
 type SignInFormData = {
-  email: string;
+  login: string;
   password: string;
 };
 
@@ -46,20 +46,20 @@ export default function SignIn() {
   const bgColor = useColorModeValue('gray.100', 'gray.800');
 
   const handleSignIn: SubmitHandler<SignInFormData> = async ({
-    email,
+    login,
     password,
   }) => {
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
     toast({
-      title: 'Credenciais válidas',
+      title: `Bem vindo, ${login}.`,
       description: 'Entrando...',
       status: 'success',
       duration: 2000,
       isClosable: true,
     });
 
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
     router.push('/dashboard');
   };
@@ -77,7 +77,12 @@ export default function SignIn() {
         align="center"
         justify="center"
       >
-        <Image src="/images/pegaso-logo.png" alt="Pégaso" mb="2" />
+        <Image
+          src="/images/pegaso-logo.png"
+          alt="Pégaso"
+          mb="2"
+          pointerEvents="none"
+        />
         <Flex
           align="center"
           justify="center"
@@ -96,10 +101,13 @@ export default function SignIn() {
             my="auto"
             variant="unstyled"
           />
+          <Text width="100px" color={color}>
+            Modo {colorMode === 'dark' ? 'escuro' : 'claro'}
+          </Text>
         </Flex>
-        <Text fontSize="lg" mb="4">
+        {/* <Text fontSize="lg" mb="4">
           Bem-vindo! Faça login para continuar:
-        </Text>
+        </Text> */}
 
         <Flex
           as="form"
@@ -132,6 +140,7 @@ export default function SignIn() {
             type="submit"
             mt="6"
             bgColor="blue.700"
+            color="gray.50"
             _hover={{ bgColor: 'blue.800' }}
             size="lg"
             isLoading={formState.isSubmitting}

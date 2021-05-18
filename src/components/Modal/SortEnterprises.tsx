@@ -16,30 +16,11 @@ import {
 } from '@chakra-ui/react';
 import { RiCloseLine } from 'react-icons/ri';
 
-export function RemoveModal() {
+export function SortEnterprisesModal() {
   const { isOpen, onClose, onOpen } = useDisclosure();
   const [loading, setLoading] = useState(false);
 
   const toast = useToast();
-
-  async function handleRemoveEnterprise() {
-    setLoading(true);
-
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-
-    toast({
-      title: 'Obra removida.',
-      status: 'success',
-      duration: 2000,
-      isClosable: true,
-    });
-
-    setLoading(false);
-
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
-    onClose();
-  }
 
   return (
     <>
@@ -51,19 +32,15 @@ export function RemoveModal() {
         onClick={onOpen}
       >
         <Icon as={RiCloseLine} mr="1" fontSize="16" />
-        Remover
+        Mudar ordem
       </Button>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Remover obra</ModalHeader>
+          <ModalHeader>Remover imagem</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Text mb="1">Tem certeza que deseja remover essa obra?</Text>
-            <Text fontSize="xl" fontWeight="bold" my="1">
-              Nome da obra aqui
-            </Text>
-            <Text mt="1">Essa ação é irreversível.</Text>
+            <Text>Tem certeza que deseja remover essa imagem?</Text>
           </ModalBody>
 
           <ModalFooter>
@@ -71,7 +48,7 @@ export function RemoveModal() {
               bg="red.700"
               _hover={{ bg: 'red.800' }}
               mr="2"
-              onClick={handleRemoveEnterprise}
+              onClick={() => {}}
               color="gray.50"
               isLoading={loading}
             >

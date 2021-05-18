@@ -50,7 +50,7 @@ const createUserFormSchema = yup.object().shape({
     .oneOf([null, yup.ref('password')], 'As senhas precisam ser iguais'),
 });
 
-export default function UserList() {
+export default function CreateEnterprise() {
   const router = useRouter();
 
   const createUser = useMutation(

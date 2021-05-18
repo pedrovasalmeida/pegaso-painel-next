@@ -30,7 +30,7 @@ import { queryClient } from '../../services/queryClient';
 import { api } from '../../services/api';
 import { GetServerSideProps } from 'next';
 
-export default function UserList() {
+export default function Enterprises() {
   const [page, setPage] = useState(1);
   const { data, isLoading, isFetching, error } = useUsers(page);
 

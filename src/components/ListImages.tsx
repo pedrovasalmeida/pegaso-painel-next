@@ -1,13 +1,12 @@
 import { HStack, SimpleGrid } from '@chakra-ui/react';
 
-import { Card } from './Card';
+import { ImagesCard } from './Card/Images';
 
 interface ListEnterprisesProps {
   projectsToList: Array<any>;
   isOnlyRemoveBox?: boolean;
   showDetailsButton?: boolean;
   showOnlyDetailsButton?: boolean;
-  showImagesButton?: boolean;
 }
 
 export default function ListEnterprises({
@@ -15,18 +14,16 @@ export default function ListEnterprises({
   showDetailsButton = false,
   showOnlyDetailsButton = false,
   isOnlyRemoveBox = false,
-  showImagesButton = false,
 }: ListEnterprisesProps) {
   return (
     <HStack spacing="6" my="4">
       <SimpleGrid minChildWidth="240px" spacing={['6', '8']} w="100%">
         {projectsToList.map((project, index) => (
-          <Card
+          <ImagesCard
             key={index}
             isOnlyRemoveBox={isOnlyRemoveBox}
             showDetailsButton={showDetailsButton}
             showOnlyDetailsButton={showOnlyDetailsButton}
-            showImagesButton={showImagesButton}
           />
         ))}
       </SimpleGrid>

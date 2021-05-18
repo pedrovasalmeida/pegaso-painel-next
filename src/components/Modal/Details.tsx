@@ -17,6 +17,7 @@ import {
   useColorModeValue,
   useDisclosure,
 } from '@chakra-ui/react';
+import { useRouter } from 'next/router';
 import { TiPlus } from 'react-icons/ti';
 
 interface DetailsModalProps {
@@ -24,14 +25,21 @@ interface DetailsModalProps {
 }
 
 export function DetailsModal({ showOnlyDetailsButton }: DetailsModalProps) {
+  const id = 'ID_DA_OBRA';
   const { isOpen, onClose, onOpen } = useDisclosure();
   const color = useColorModeValue('gray.900', 'gray.50');
   const boxBgColor = useColorModeValue('gray.100', 'gray.700');
+
+  const router = useRouter();
 
   const isWideVersion = useBreakpointValue({
     base: false,
     md: true,
   });
+
+  function handleManageImages(id: string) {
+    router.push(`/obras/images/${id}`);
+  }
 
   return (
     <>
@@ -98,9 +106,9 @@ export function DetailsModal({ showOnlyDetailsButton }: DetailsModalProps) {
               _hover={{ bg: 'blue.900' }}
               color="gray.50"
               mr="2"
-              onClick={() => {}}
+              onClick={() => handleManageImages(id)}
             >
-              Ver todas as obras
+              Gerenciar Imagens
             </Button>
             <Button
               bg="blue.700"

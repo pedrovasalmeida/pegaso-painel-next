@@ -1,6 +1,10 @@
+import { Button } from '@chakra-ui/button';
 import { useColorModeValue } from '@chakra-ui/color-mode';
+import Icon from '@chakra-ui/icon';
 import { Image } from '@chakra-ui/image';
 import { Flex, HStack, Text } from '@chakra-ui/layout';
+import { useRouter } from 'next/router';
+import { RiImageAddLine } from 'react-icons/ri';
 import { DetailsModal } from '../Modal/Details';
 import { EditEnterpriseModal } from '../Modal/EditEnterprise';
 import { RemoveModal } from '../Modal/Remove';
@@ -9,17 +13,24 @@ interface CardProps {
   isOnlyRemoveBox?: boolean;
   showDetailsButton?: boolean;
   showOnlyDetailsButton?: boolean;
-  editFunction?: () => void;
-  removeFunction?: () => void;
+  showImagesButton?: boolean;
 }
 
 export function Card({
   isOnlyRemoveBox = false,
   showOnlyDetailsButton = false,
   showDetailsButton = false,
+  showImagesButton = false,
 }: CardProps) {
+  const id = 'ID_DA_OBRA';
   const color = useColorModeValue('gray.900', 'gray.50');
   const boxBgColor = useColorModeValue('gray.100', 'gray.700');
+
+  const router = useRouter();
+
+  function handleManageImages(id: string) {
+    router.push(`/obras/images/${id}`);
+  }
 
   return (
     <Flex
@@ -62,6 +73,20 @@ export function Card({
 
       {showDetailsButton && (
         <DetailsModal showOnlyDetailsButton={showOnlyDetailsButton} />
+      )}
+
+      {showImagesButton && (
+        <Button
+          mt="2"
+          w="100%"
+          bg="blue.700"
+          color="gray.50"
+          _hover={{ bgColor: 'blue.800' }}
+          onClick={() => handleManageImages(id)}
+        >
+          <Icon as={RiImageAddLine} mr="1" fontSize="16" />
+          Gerenciar imagens
+        </Button>
       )}
 
       <>{/* <AddImageModal isOpen={isOpen} onClose={onClose} /> */}</>
