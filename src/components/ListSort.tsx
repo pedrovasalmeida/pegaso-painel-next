@@ -1,4 +1,4 @@
-import { HStack, SimpleGrid } from '@chakra-ui/react';
+import { Flex, HStack, SimpleGrid, VStack } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 
 import { SortCard } from './Card/ChangeOrder';
@@ -7,26 +7,33 @@ import { IEnterprise } from '../types/IEnterprise';
 
 import { useEnterpriseContext } from '../contexts/EnterprisesContext';
 
+interface ListSortProps {
+  projectsToList?: IEnterprise[];
+}
+
 export default function ListSort() {
   const { enterprises } = useEnterpriseContext();
 
   function handleChangeEnterpriseDisplayOrder() {
-    // mudar a ordem de exibição, controlada pela prop
-    // displayOrder
-    // behavior:
-    // troca o valor da displayOrder pelo valor selecionado
-    // pega o valor da displayOrder atual e seta no elemento trocado
+    console.log('função');
+    /**
+     * Comportamento:
+     * - Será controlado por setas ↓ ↑
+     * - Segurar a seta joga ao topo / fundo
+     */
   }
 
   useEffect(() => {}, []);
 
   return (
-    <HStack spacing="6" my="4">
-      <SimpleGrid minChildWidth="240px" spacing={['6', '8']} w="100%">
-        {enterprises.map((project, index) => (
-          <SortCard key={index} enterprise={project} />
-        ))}
-      </SimpleGrid>
-    </HStack>
+    <VStack spacing="6">
+      {/* <SimpleGrid minChildWidth="100%" spacing={['6', '8']} w="100%"> */}
+
+      {enterprises.map((enterprise) => (
+        <SortCard key={enterprise.id} enterprise={enterprise} />
+      ))}
+
+      {/* </SimpleGrid> */}
+    </VStack>
   );
 }
