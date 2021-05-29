@@ -27,6 +27,7 @@ import { api } from '../../services/api';
 import { queryClient } from '../../services/queryClient';
 import { TextArea } from '../../components/Form/TextArea';
 import Head from 'next/head';
+import { AddImageModal } from '../../components/Modal/AddImage';
 
 type CreateUserFormData = {
   name: string;
@@ -154,12 +155,13 @@ export default function CreateEnterprise() {
                 />
               </SimpleGrid>
               <Input
+                display="none"
                 name="banner"
                 type="text"
-                label="Link do banner"
                 error={errors.password}
                 {...register('banner')}
               />
+              <AddImageModal fullWidth createEnterprisePage />
             </VStack>
 
             <Flex mt="8" justify={isWideVersion ? 'flex-end' : 'center'}>

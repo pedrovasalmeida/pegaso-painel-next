@@ -4,7 +4,9 @@ import {
   Heading,
   HStack,
   Text,
+  useBreakpointValue,
   useColorModeValue,
+  VStack,
 } from '@chakra-ui/react';
 
 import { Header } from '../../../components/Header';
@@ -25,10 +27,17 @@ export default function UserList() {
   const color = useColorModeValue('gray.900', 'gray.50');
   const cancelButtonBg = useColorModeValue('gray.200', 'gray.400');
 
+  const totalDeImagens: number = 18;
+
+  const isWideVersion = useBreakpointValue({
+    base: false,
+    md: true,
+  });
+
   return (
     <>
       <Head>
-        <title>Imagens | Pégaso</title>
+        <title>NOME DA OBRA | Pégaso</title>
       </Head>
 
       <Box minH="100vh">
@@ -38,19 +47,31 @@ export default function UserList() {
           <Sidebar />
 
           <Flex direction="column" w="100%">
-            <Flex>
-              <Flex direction="column">
-                <Heading h="10">Gerenciar imagens</Heading>
+            <Flex direction="column">
+              <Heading fontSize="24">Gerenciar imagens</Heading>
 
-                <Text mt="4" fontSize="lg">
-                  Lista de todas imagens da obra NOME
-                </Text>
-                <Text fontSize="sm">ID: {id}</Text>
-              </Flex>
-              <HStack ml="auto" spacing="6">
-                <AddImageModal />
-                <RemoveImageModal removeAllImages />
-              </HStack>
+              <Text mt="4" fontSize="md">
+                {totalDeImagens <= 0 &&
+                  `Essa obra não tem imagens cadastradas.`}
+                {totalDeImagens === 1 &&
+                  `${totalDeImagens} imagem da obra NOME`}
+                {totalDeImagens > 1 && `${totalDeImagens} imagens da obra NOME`}
+              </Text>
+              {/* <Text fontSize="small" mt="1">
+                  ID: {id}
+                </Text> */}
+
+              {isWideVersion ? (
+                <HStack ml="auto" spacing="6" maxW="100%">
+                  <AddImageModal />
+                  <RemoveImageModal removeAllImages />
+                </HStack>
+              ) : (
+                <VStack maxW="100%" my="2">
+                  <AddImageModal fullWidth />
+                  <RemoveImageModal removeAllImages fullWidth />
+                </VStack>
+              )}
             </Flex>
 
             <ListImages projectsToList={cards} showDetailsButton />
