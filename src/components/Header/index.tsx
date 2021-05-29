@@ -28,10 +28,11 @@ export function Header() {
       w="100%"
       h="20"
       maxWidth={1600}
-      mt="4"
+      mt="1"
       mx="auto"
-      px="4"
+      px="2"
       align="center"
+      p={isWideVersion ? '4' : '2'}
     >
       {!isWideVersion && (
         <IconButton
