@@ -11,6 +11,7 @@ import {
   ModalOverlay,
   Text,
   toast,
+  useBreakpointValue,
   useDisclosure,
   useToast,
 } from '@chakra-ui/react';
@@ -18,10 +19,12 @@ import { RiCloseLine } from 'react-icons/ri';
 
 interface RemoveImageModalProps {
   removeAllImages?: boolean;
+  fullWidth?: boolean;
 }
 
 export function RemoveImageModal({
   removeAllImages = false,
+  fullWidth = false,
 }: RemoveImageModalProps) {
   const { isOpen, onClose, onOpen } = useDisclosure();
   const [loading, setLoading] = useState(false);
@@ -77,10 +80,11 @@ export function RemoveImageModal({
           _hover={{ bgColor: 'red.800' }}
           size="md"
           fontSize="sm"
+          width={fullWidth ? '100%' : '180px'}
           onClick={onOpen}
         >
           <Icon as={RiCloseLine} mr="1" fontSize="16" />
-          Remover todas as imagens
+          Remover tudo
         </Button>
         <Modal isOpen={isOpen} onClose={onClose}>
           <ModalOverlay />
