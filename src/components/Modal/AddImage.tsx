@@ -1,6 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-import { Button, Flex, Icon, Input, useToast } from '@chakra-ui/react';
+import {
+  Button,
+  Flex,
+  Icon,
+  Input,
+  useBreakpointValue,
+  useToast,
+} from '@chakra-ui/react';
 
 import { RiImageAddFill, RiSendPlane2Line } from 'react-icons/ri';
 
@@ -8,12 +15,25 @@ interface HTMLInputEvent extends Event {
   target: HTMLInputElement & EventTarget;
 }
 
-export function AddImageModal() {
+interface AddImageModalProps {
+  fullWidth?: boolean;
+  createEnterprisePage?: boolean;
+}
+
+export function AddImageModal({
+  fullWidth = false,
+  createEnterprisePage = false,
+}: AddImageModalProps) {
   const [loading, setLoading] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
 
   const toast = useToast();
   const inputFileRef = useRef(null);
+
+  const isWideVersion = useBreakpointValue({
+    base: false,
+    md: true,
+  });
 
   function handleSelectImagesToUpload() {
     if (inputFileRef?.current.files.length > 0) {
@@ -65,7 +85,7 @@ export function AddImageModal() {
   }
 
   return (
-    <Flex>
+    <Flex width="100%">
       <Input
         ref={inputFileRef}
         type="file"
@@ -76,22 +96,28 @@ export function AddImageModal() {
         placeholder="Adicionar imagem"
         display="none"
       />
-      <Flex>
+      <Flex width="100%">
         <Button
           my="auto"
           ml="auto"
           bg="blue.700"
           color="gray.50"
           _hover={{ bgColor: 'blue.800' }}
-          size="md"
-          fontSize="sm"
+          fontSize={['12', '14']}
           isLoading={loading}
+          width={fullWidth ? '50%' : 'auto'}
           onClick={() => inputFileRef?.current.click()}
         >
           <Icon as={RiImageAddFill} mr="1" fontSize="16" />
-          {files.length <= 0 && 'Adicionar imagens'}
-          {files.length === 1 && 'Adicionar 1 imagem'}
-          {files.length >= 2 && `Adicionar ${files.length} imagens`}
+          {createEnterprisePage ? (
+            'Adicionar banner'
+          ) : (
+            <>
+              {files.length <= 0 && 'Adicionar imagens'}
+              {files.length === 1 && 'Adicionar 1 imagem'}
+              {files.length >= 2 && `Adicionar ${files.length} imagens`}
+            </>
+          )}
         </Button>
 
         <Button
@@ -100,8 +126,8 @@ export function AddImageModal() {
           bg="blue.700"
           color="gray.50"
           _hover={{ bgColor: 'blue.800' }}
-          size="md"
           fontSize="sm"
+          width={fullWidth ? '50%' : 'auto'}
           disabled={files.length <= 0}
           isLoading={loading}
           onClick={handleUploadImages}
