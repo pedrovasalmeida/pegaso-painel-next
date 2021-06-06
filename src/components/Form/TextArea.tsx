@@ -1,6 +1,7 @@
 import {
   forwardRef,
   ForwardRefRenderFunction,
+  LegacyRef,
   TextareaHTMLAttributes,
 } from 'react';
 import { FieldError } from 'react-hook-form';
@@ -18,10 +19,11 @@ interface TextareaProps extends ChakraTextareaProps {
   name: string;
   label?: string;
   error?: FieldError;
+  ref: LegacyRef<HTMLTextAreaElement>;
 }
 
 const TextAreaBase: ForwardRefRenderFunction<HTMLInputElement, TextareaProps> =
-  ({ name, label, error = null, ...rest }, ref) => {
+  ({ name, label, error = null, ref, ...rest }) => {
     const boxBgColor = useColorModeValue('gray.200', 'gray.700');
     const focusBgColor = useColorModeValue('gray.100', 'gray.800');
     const color = useColorModeValue('gray.900', 'gray.50');
