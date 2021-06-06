@@ -15,28 +15,50 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { RiCloseLine } from 'react-icons/ri';
+import { IFinalEnterprise } from '../../types/IEnterprise';
+import { api } from '../../services/api';
+import { useRouter } from 'next/router';
 
-export function RemoveModal() {
+interface RemoveModalProps {
+  project: IFinalEnterprise;
+}
+
+export function RemoveModal({ project }: RemoveModalProps) {
   const { isOpen, onClose, onOpen } = useDisclosure();
   const [loading, setLoading] = useState(false);
+
+  const router = useRouter();
 
   const toast = useToast();
 
   async function handleRemoveEnterprise() {
     setLoading(true);
 
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    try {
+      await api.delete('deleteEnterprise', { data: { id: project.id } });
 
-    toast({
-      title: 'Obra removida.',
-      status: 'success',
-      duration: 2000,
-      isClosable: true,
-    });
+      toast({
+        title: 'Obra removida.',
+        status: 'success',
+        duration: 2000,
+        isClosable: true,
+      });
 
-    setLoading(false);
+      setLoading(false);
 
-    await new Promise((resolve) => setTimeout(resolve, 500));
+      setTimeout(() => {
+        router.reload();
+      }, 1000);
+    } catch {
+      toast({
+        title: 'Ocorreu um erro ao remover a obra.',
+        status: 'error',
+        duration: 2000,
+        isClosable: true,
+      });
+
+      setLoading(false);
+    }
 
     onClose();
   }
@@ -59,11 +81,13 @@ export function RemoveModal() {
           <ModalHeader>Remover obra</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Text mb="1">Tem certeza que deseja remover essa obra?</Text>
-            <Text fontSize="xl" fontWeight="bold" my="1">
-              Nome da obra aqui
+            <Text mb="1">
+              Tem certeza que deseja remover <strong>{project.name}</strong>?
             </Text>
             <Text mt="1">Essa ação é irreversível.</Text>
+            <Text mt="2" fontSize="10" fontWeight="normal">
+              ID da obra: {project.id}
+            </Text>
           </ModalBody>
 
           <ModalFooter>

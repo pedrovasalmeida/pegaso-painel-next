@@ -15,8 +15,16 @@ import { Sidebar } from '../../components/Sidebar';
 import ListEnterprises from '../../components/ListEnterprises';
 import ListSort from '../../components/ListSort';
 import { useState } from 'react';
+import LoginPage from './index';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function SortEnterprises() {
+  const { isAuthenticated } = useAuth();
+
+  if (!isAuthenticated) {
+    return <LoginPage />;
+  }
+
   const [loadingSaveChanges, setLoadingSaveChanges] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
 

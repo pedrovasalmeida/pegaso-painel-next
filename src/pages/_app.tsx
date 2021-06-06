@@ -6,25 +6,27 @@ import { EnterprisesProvider } from '../contexts/EnterprisesContext';
 
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
-import { makeServer } from '../services/mirage';
 
 import { theme } from '../styles/theme';
 import { queryClient } from '../services/queryClient';
 
-if (process.env.NODE_ENV === 'development') {
-  makeServer();
-}
+import firebase from '../database/initFirebase';
+import { AuthProvider } from '../contexts/AuthContext';
+
+firebase();
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <QueryClientProvider client={queryClient}>
-      <SidebarDrawerProvider>
-        <ChakraProvider theme={theme}>
-          <EnterprisesProvider>
-            <Component {...pageProps} />
-          </EnterprisesProvider>
-        </ChakraProvider>
-      </SidebarDrawerProvider>
+      <AuthProvider>
+        <SidebarDrawerProvider>
+          <ChakraProvider theme={theme}>
+            <EnterprisesProvider>
+              <Component {...pageProps} />
+            </EnterprisesProvider>
+          </ChakraProvider>
+        </SidebarDrawerProvider>
+      </AuthProvider>
 
       <ReactQueryDevtools />
     </QueryClientProvider>

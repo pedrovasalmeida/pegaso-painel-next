@@ -12,34 +12,21 @@ import {
   useDisclosure,
   useToast,
 } from '@chakra-ui/react';
+import { ClassNames } from '@emotion/react';
 import { useState } from 'react';
 
 import { RiEditLine } from 'react-icons/ri';
+import { IFinalEnterprise } from '../../types/IEnterprise';
 
 import { EditEnterpriseForm } from '../EditEnterpriseForm';
 
-export function EditEnterpriseModal() {
+interface EditEnterpriseModalProps {
+  project: IFinalEnterprise;
+}
+
+export function EditEnterpriseModal({ project }: EditEnterpriseModalProps) {
   const [isSaveLoading, setIsSaveLoading] = useState(false);
   const { isOpen, onClose, onOpen } = useDisclosure();
-  const toast = useToast();
-
-  async function handleSaveEdit() {
-    setIsSaveLoading(true);
-
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
-    setIsSaveLoading(false);
-
-    toast({
-      title: 'Alterações salvas.',
-      status: 'success',
-      duration: 2000,
-      isClosable: true,
-      position: 'top-left',
-    });
-
-    onClose();
-  }
 
   return (
     <>
@@ -59,24 +46,8 @@ export function EditEnterpriseModal() {
           <ModalHeader>Editar obra</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <EditEnterpriseForm />
+            <EditEnterpriseForm project={project} onClose={onClose} />
           </ModalBody>
-
-          <ModalFooter>
-            <Button
-              bg="blue.700"
-              _hover={{ bg: 'blue.900' }}
-              mr="2"
-              color="gray.50"
-              onClick={handleSaveEdit}
-              isLoading={isSaveLoading}
-            >
-              Salvar alterações
-            </Button>
-            <Button variant="ghost" onClick={onClose}>
-              Cancelar
-            </Button>
-          </ModalFooter>
         </ModalContent>
       </Modal>
     </>

@@ -21,6 +21,8 @@ const InputBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = (
   ref
 ) => {
   const boxBgColor = useColorModeValue('gray.200', 'gray.700');
+  const focusBgColor = useColorModeValue('gray.100', 'gray.800');
+  const color = useColorModeValue('gray.900', 'gray.50');
 
   return (
     <FormControl isInvalid={!!error}>
@@ -31,6 +33,8 @@ const InputBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = (
         name={name}
         type="email"
         focusBorderColor="blue.500"
+        _placeholder={{ color }}
+        _focus={{ bgColor: focusBgColor }}
         bgColor={boxBgColor}
         variant="filled"
         size="lg"

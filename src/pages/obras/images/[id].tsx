@@ -16,18 +16,25 @@ import Head from 'next/head';
 import { RemoveImageModal } from '../../../components/Modal/RemoveImage';
 import { useRouter } from 'next/router';
 import { AddImageModal } from '../../../components/Modal/AddImage';
+import { useEnterpriseContext } from '../../../contexts/EnterprisesContext';
+import LoginPage from '../../index';
+import { useAuth } from '../../../contexts/AuthContext';
 
 export default function UserList() {
-  const cards = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
-  const router = useRouter();
+  const { isAuthenticated } = useAuth();
 
-  const { id } = router.query;
+  if (!isAuthenticated) {
+    return <LoginPage />;
+  }
+
+  const { singleEnterprise } = useEnterpriseContext();
+  const router = useRouter();
 
   const boxBgColor = useColorModeValue('gray.100', 'gray.800');
   const color = useColorModeValue('gray.900', 'gray.50');
   const cancelButtonBg = useColorModeValue('gray.200', 'gray.400');
 
-  const totalDeImagens: number = 18;
+  const totalDeImagens = singleEnterprise?.images.length;
 
   const isWideVersion = useBreakpointValue({
     base: false,
@@ -37,7 +44,7 @@ export default function UserList() {
   return (
     <>
       <Head>
-        <title>NOME DA OBRA | Pégaso</title>
+        <title>{singleEnterprise?.name} | Pégaso</title>
       </Head>
 
       <Box minH="100vh">
@@ -68,13 +75,16 @@ export default function UserList() {
                 </HStack>
               ) : (
                 <VStack maxW="100%" my="2">
-                  <AddImageModal fullWidth />
+                  <AddImageModal fullWidth documentId={singleEnterprise?.id} />
                   <RemoveImageModal removeAllImages fullWidth />
                 </VStack>
               )}
             </Flex>
 
-            <ListImages projectsToList={cards} showDetailsButton />
+            <ListImages
+              projectsToList={singleEnterprise?.images}
+              showDetailsButton
+            />
           </Flex>
         </Box>
       </Box>

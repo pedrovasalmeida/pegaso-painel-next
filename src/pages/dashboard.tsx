@@ -1,24 +1,31 @@
-import {
-  Flex,
-  SimpleGrid,
-  Box,
-  Text,
-  theme,
-  Heading,
-  Icon,
-  Button,
-  useBreakpointValue,
-} from '@chakra-ui/react';
+import { Flex, Heading, Button, useBreakpointValue } from '@chakra-ui/react';
+import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { TiPlus } from 'react-icons/ti';
+import { useAuth } from '../contexts/AuthContext';
 
 import { Header } from '../components/Header';
 import ListEnterprises from '../components/ListEnterprises';
 import { Sidebar } from '../components/Sidebar';
+import LoginPage from './index';
 
-export default function Dashboard() {
-  const cards = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
+import firebase from 'firebase/app';
+import 'firebase/firestore';
+
+import { IFinalEnterprise, IUser } from '../types/IEnterprise';
+
+interface DashboardProps {
+  enterprisesSSR: IFinalEnterprise[];
+}
+
+export default function Dashboard({ enterprisesSSR }: DashboardProps) {
+  const { isAuthenticated } = useAuth();
+
+  if (!isAuthenticated) {
+    console.log(`Autenticado: ${isAuthenticated}`);
+    return <LoginPage />;
+  }
+
   const router = useRouter();
 
   const isWideVersion = useBreakpointValue({
@@ -42,8 +49,8 @@ export default function Dashboard() {
         <Flex w="100%" maxWidth={1600} my="6" mx="auto" px="4">
           <Sidebar />
 
-          <Flex direction="column">
-            <Flex>
+          <Flex direction="column" w="100%">
+            <Flex justify="space-between" w="100%">
               <Heading>Seja bem vindo!</Heading>
               <Button
                 my="auto"
@@ -59,18 +66,12 @@ export default function Dashboard() {
               </Button>
             </Flex>
 
-            <Flex
-              direction="column"
-              w={!isWideVersion ? '100%' : '100%'}
-              align="flex-end"
-            >
-              <Flex>
-                <ListEnterprises
-                  projectsToList={cards}
-                  showDetailsButton
-                  showOnlyDetailsButton
-                />
-              </Flex>
+            <Flex w="100%">
+              <ListEnterprises
+                enterprises={enterprisesSSR}
+                showDetailsButton
+                showOnlyDetailsButton
+              />
             </Flex>
           </Flex>
         </Flex>
@@ -78,3 +79,27 @@ export default function Dashboard() {
     </>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async () => {
+  const dataFb = await firebase.firestore().collection('enterprises').get();
+
+  const enterprises = dataFb.docs.map((doc) => doc.data());
+
+  if (enterprises.length === 0) {
+    return {
+      props: {
+        enterprisesSSR: [],
+      },
+    };
+  }
+
+  const finalEnterprises = enterprises.sort(
+    (a, b) => a.displayOrder - b.displayOrder
+  );
+
+  return {
+    props: {
+      enterprisesSSR: finalEnterprises,
+    },
+  };
+};

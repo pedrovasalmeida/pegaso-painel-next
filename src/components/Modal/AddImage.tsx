@@ -11,6 +11,11 @@ import {
 
 import { RiImageAddFill, RiSendPlane2Line } from 'react-icons/ri';
 
+import firebase from 'firebase/app';
+import 'firebase/storage';
+import { v4 as uuid } from 'uuid';
+import { api } from '../../services/api';
+
 interface HTMLInputEvent extends Event {
   target: HTMLInputElement & EventTarget;
 }
@@ -18,14 +23,27 @@ interface HTMLInputEvent extends Event {
 interface AddImageModalProps {
   fullWidth?: boolean;
   createEnterprisePage?: boolean;
+  singleFile?: boolean;
+  inputRef?: any;
+  documentId?: string;
+}
+
+interface ImagesProps {
+  id: string;
+  link: string;
 }
 
 export function AddImageModal({
   fullWidth = false,
   createEnterprisePage = false,
+  singleFile = false,
+  inputRef = null,
+  documentId = null,
 }: AddImageModalProps) {
   const [loading, setLoading] = useState(false);
+  const [uploadingImage, setUploadImage] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
+  const [imagesUploaded, setImagesUploaded] = useState<ImagesProps[]>([]);
 
   const toast = useToast();
   const inputFileRef = useRef(null);
@@ -53,25 +71,65 @@ export function AddImageModal({
   }
 
   async function handleUploadImages() {
-    setLoading(true);
-
+    setUploadImage(true);
     try {
-      await new Promise((resolve, reject) => setTimeout(resolve, 2000));
+      if (!singleFile) {
+        const storageRef = firebase.storage().ref();
+
+        files.forEach(async (file, index) => {
+          const name = `${uuid()}-${file.name}`;
+          const metadata = {
+            contentType: file.type,
+          };
+          const task = storageRef.child(name).put(file, metadata);
+          task
+            .then((snapshop) => {
+              return snapshop.ref.getDownloadURL();
+            })
+            .then((url) => {
+              setImagesUploaded([...imagesUploaded, { id: uuid(), link: url }]);
+            })
+            .catch((err) => console.log(err));
+        });
+
+        await api.post('createImages', {
+          data: { id: documentId, images: imagesUploaded },
+        });
+
+        setUploadImage(false);
+        return;
+      }
+
+      const storageRef = firebase.storage().ref();
+      const name = `${uuid()}-banner-${files[0].name}`;
+      const metadata = {
+        contentType: files[0].type,
+      };
+
+      const task = storageRef.child(name).put(files[0], metadata);
+
+      task
+        .then((snapshop) => {
+          return snapshop.ref.getDownloadURL();
+        })
+        .then((url) => {
+          if (inputRef) {
+            inputRef.current.value = url;
+          }
+        })
+        .catch((err) => console.log(err));
 
       toast({
-        title:
-          files.length > 1
-            ? `As ${files.length} imagens foram adicionadas.`
-            : 'A imagem foi adicionada.',
+        title: 'Banner enviado.',
+        description: 'Finalize a criação da obra pelo botão "Criar".',
         status: 'success',
         duration: 2000,
         isClosable: true,
       });
 
-      setFiles([]);
-
-      setLoading(false);
-    } catch {
+      setUploadImage(false);
+    } catch (err) {
+      console.log(err);
       toast({
         title: 'Ocorreu um erro.',
         description: 'Tente novamente.',
@@ -79,8 +137,7 @@ export function AddImageModal({
         duration: 2000,
         isClosable: true,
       });
-
-      setLoading(false);
+      setUploadImage(false);
     }
   }
 
@@ -129,7 +186,7 @@ export function AddImageModal({
           fontSize="sm"
           width={fullWidth ? '50%' : 'auto'}
           disabled={files.length <= 0}
-          isLoading={loading}
+          isLoading={uploadingImage}
           onClick={handleUploadImages}
         >
           <Icon as={RiSendPlane2Line} mr="1" fontSize="16" />

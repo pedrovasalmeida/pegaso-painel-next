@@ -14,11 +14,7 @@ type Enterprises = {
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    const dataFb = await firebase.firestore().collection('enterprises').get();
-
-    const enterprises = dataFb.docs.map((doc) => doc.data());
-
-    return res.status(200).json({ enterprises });
+    // enviar imagens para firebase e adicionar na obra
   } catch (err) {
     console.log(err);
     return res.status(400);

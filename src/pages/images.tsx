@@ -16,9 +16,18 @@ import { TiPlus } from 'react-icons/ti';
 import { Header } from '../components/Header';
 import ListEnterprises from '../components/ListEnterprises';
 import { Sidebar } from '../components/Sidebar';
+import { useAuth } from '../contexts/AuthContext';
+import { useEnterpriseContext } from '../contexts/EnterprisesContext';
+import LoginPage from './index';
 
 export default function Images() {
-  const cards = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
+  const { isAuthenticated } = useAuth();
+
+  if (!isAuthenticated) {
+    return <LoginPage />;
+  }
+
+  const { enterprises } = useEnterpriseContext();
   const router = useRouter();
 
   const isWideVersion = useBreakpointValue({
@@ -55,7 +64,7 @@ export default function Images() {
             >
               <Flex>
                 <ListEnterprises
-                  projectsToList={cards}
+                  enterprises={enterprises}
                   showOnlyDetailsButton
                   showImagesButton
                 />

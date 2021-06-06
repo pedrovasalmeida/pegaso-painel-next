@@ -1,20 +1,58 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { query as q } from 'faunadb';
-import { fauna } from '../../services/fauna';
+import firebase from 'firebase/app';
+import 'firebase/firestore';
+import 'firebase/storage';
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    const enterpriseRef = req.body.ref;
+    const images = [];
+    const enterpriseId = req.body.id;
 
-    await fauna.query(
-      q.Delete(q.Ref(q.Collection('enterprises'), enterpriseRef))
-    );
+    const enterprise = await firebase
+      .firestore()
+      .collection('enterprises')
+      .doc(enterpriseId)
+      .get();
 
-    return res.status(204);
-  } catch {
+    const bannerUrl: string = enterprise.data().banner;
+    const enterpriseImages: any[] = enterprise.data().images;
+
+    if (bannerUrl !== 'invalid_link') {
+      const bannerRef = await firebase.storage().refFromURL(bannerUrl);
+      console.log(`Banner ref: ${bannerRef}`);
+
+      bannerRef
+        .delete()
+        .then()
+        .catch((err) => console.log(err));
+    }
+    // deve percorrer o array de imagens e ir deletando as imagens também
+    if (enterpriseImages.length > 0) {
+      enterpriseImages.forEach((image) => {
+        // id, link
+        const imageRef = firebase.storage().refFromURL(image.link);
+
+        imageRef
+          .delete()
+          .then()
+          .catch((err) => console.log(err));
+      });
+    }
+
+    await firebase
+      .firestore()
+      .collection('enterprises')
+      .doc(enterpriseId)
+      .delete();
+
+    return res
+      .status(200)
+      .json({ message: 'Obra excluída com sucesso', status: 'success' });
+  } catch (err) {
     return res.status(400).json({
       error: 'Houve um problema ao remover a obra.',
       errorCode: 'cannot.destroy.enterprise',
+      errorMessage: err,
     });
   }
 };

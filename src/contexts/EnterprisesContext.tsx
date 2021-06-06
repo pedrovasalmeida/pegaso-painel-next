@@ -5,8 +5,9 @@ import {
   useEffect,
   useState,
 } from 'react';
+import { api } from '../services/api';
 
-import { IEnterprise } from '../types/IEnterprise';
+import { IEnterprise, IFinalEnterprise } from '../types/IEnterprise';
 import fakeData from './fake-data.json';
 
 interface EnterprisesProviderProps {
@@ -14,48 +15,55 @@ interface EnterprisesProviderProps {
 }
 
 type EnterpriseContextData = {
-  enterprises: IEnterprise[];
+  enterprises: IFinalEnterprise[];
+  loadingEnterprisesData: boolean;
+  setSingleEnterpriseData: (project: IFinalEnterprise | null) => void;
+  singleEnterprise: IFinalEnterprise | null;
 };
 
 const EnterpriseContext = createContext({} as EnterpriseContextData);
 
 export function EnterprisesProvider({ children }: EnterprisesProviderProps) {
-  const [enterprises, setEnterprises] = useState<IEnterprise[]>([]);
+  const [enterprises, setEnterprises] = useState<IFinalEnterprise[]>([]);
+  const [singleEnterprise, setSingleEnterprise] =
+    useState<IFinalEnterprise | null>(null);
+  const [loadingEnterprisesData, setLoadingEnterprisesData] = useState(false);
 
-  function changeDisplayOrder(
-    projects: IEnterprise[],
-    orderFrom: number,
-    orderTo: number
-  ) {
-    const elementFrom = projects.find(
-      (proj) => proj.displayOrder === orderFrom
-    );
-    const elementTo = projects.find((proj) => proj.displayOrder === orderTo);
+  async function getEnterprises() {
+    setLoadingEnterprisesData(true);
 
-    const newElementFrom = {
-      displayOrder: orderTo,
-      ...elementFrom,
-    };
+    try {
+      const response = await api.get('getEnterprises');
 
-    const newElementTo = {
-      displayOrder: orderFrom,
-      ...elementTo,
-    };
+      const finalEnterprises = response.data.enterprises.sort(
+        (a, b) => a.displayOrder - b.displayOrder
+      );
 
-    const enterprisesChanged = [];
+      setEnterprises(finalEnterprises);
+      setLoadingEnterprisesData(false);
+    } catch {
+      setEnterprises([]);
+      setLoadingEnterprisesData(false);
+    }
+  }
 
-    // vai até o projeto de displayOrder = orderFrom
-    // identifica os 2 elementos
-    // set displayOrder = orderTo
-    // set displayOrder do elemento antigo para orderFrom
+  function setSingleEnterpriseData(project: IFinalEnterprise | null) {
+    setSingleEnterprise(project);
   }
 
   useEffect(() => {
-    setEnterprises(fakeData);
+    // getEnterprises();
   }, []);
 
   return (
-    <EnterpriseContext.Provider value={{ enterprises }}>
+    <EnterpriseContext.Provider
+      value={{
+        enterprises,
+        loadingEnterprisesData,
+        setSingleEnterpriseData,
+        singleEnterprise,
+      }}
+    >
       {children}
     </EnterpriseContext.Provider>
   );

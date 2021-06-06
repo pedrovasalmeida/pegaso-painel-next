@@ -18,7 +18,7 @@ export default function ListEnterprises({
   return (
     <HStack spacing="6" my="4">
       <SimpleGrid minChildWidth="240px" spacing={['6', '8']} w="100%">
-        {projectsToList.map((project, index) => (
+        {projectsToList?.map((project, index) => (
           <ImagesCard
             key={index}
             isOnlyRemoveBox={isOnlyRemoveBox}

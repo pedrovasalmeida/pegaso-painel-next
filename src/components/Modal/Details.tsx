@@ -19,16 +19,25 @@ import {
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { TiPlus } from 'react-icons/ti';
+import { useEnterpriseContext } from '../../contexts/EnterprisesContext';
+import { IFinalEnterprise } from '../../types/IEnterprise';
 
 interface DetailsModalProps {
-  showOnlyDetailsButton: boolean;
+  project: IFinalEnterprise;
+  showOnlyDetailsButton?: boolean;
+  textFromDetailsButton?: string | null;
 }
 
-export function DetailsModal({ showOnlyDetailsButton }: DetailsModalProps) {
-  const id = 'ID_DA_OBRA';
+export function DetailsModal({
+  showOnlyDetailsButton = false,
+  project,
+  textFromDetailsButton = null,
+}: DetailsModalProps) {
   const { isOpen, onClose, onOpen } = useDisclosure();
+  const { setSingleEnterpriseData } = useEnterpriseContext();
   const color = useColorModeValue('gray.900', 'gray.50');
   const boxBgColor = useColorModeValue('gray.100', 'gray.700');
+  const imagesLength = project.images.length;
 
   const router = useRouter();
 
@@ -38,6 +47,11 @@ export function DetailsModal({ showOnlyDetailsButton }: DetailsModalProps) {
   });
 
   function handleManageImages(id: string) {
+    if (!project) {
+      return;
+    }
+
+    setSingleEnterpriseData(project);
     router.push(`/obras/images/${id}`);
   }
 
@@ -52,7 +66,7 @@ export function DetailsModal({ showOnlyDetailsButton }: DetailsModalProps) {
         onClick={onOpen}
       >
         <Icon as={TiPlus} mr="2" fontSize="16" />
-        Detalhes
+        {textFromDetailsButton || 'Detalhes'}
       </Button>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
@@ -62,13 +76,25 @@ export function DetailsModal({ showOnlyDetailsButton }: DetailsModalProps) {
           <ModalBody>
             <Flex direction="column">
               <Image
-                src="/images/image.jpeg"
-                alt="alguma imagem"
+                src={project.banner}
+                alt="Banner"
                 maxH="150px"
                 mb="1"
                 borderRadius="8"
                 objectFit="cover"
               />
+              <Text display="flex" my="1">
+                <a
+                  href={project.banner}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  <Text color="blue.700">
+                    {' '}
+                    Clique aqui para obter o link do banner
+                  </Text>
+                </a>
+              </Text>
               <Text
                 color={color}
                 fontWeight="bold"
@@ -77,26 +103,17 @@ export function DetailsModal({ showOnlyDetailsButton }: DetailsModalProps) {
                 my="1"
                 isTruncated
               >
-                Título da obra aqui
+                {project.name}
               </Text>
-              <Divider />
-              <Text my="1">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                Voluptatibus ducimus, vitae ratione repellat eos, porro
-                repellendus maxime facilis dolor tenetur nemo magni provident?
-              </Text>
-              <Divider />
-              <Text my="1">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-              </Text>
-              <Divider />
-              <Text my="1">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-              </Text>
-              <Divider />
-              <Text my="1">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-              </Text>
+              <Divider my="1" />
+              <Text my="1">{project.description}</Text>
+              <Divider my="1" />
+              <Text my="1">{project.address}</Text>
+              <Divider my="1" />
+              <Text my="1">Criado em {project.createdAt}</Text>
+              {project.createdAt !== project.updatedAt && (
+                <Text my="1">Atualizado em {project.updatedAt}</Text>
+              )}
             </Flex>
           </ModalBody>
 
@@ -106,7 +123,7 @@ export function DetailsModal({ showOnlyDetailsButton }: DetailsModalProps) {
               _hover={{ bg: 'blue.900' }}
               color="gray.50"
               mr="2"
-              onClick={() => handleManageImages(id)}
+              onClick={() => handleManageImages(project.id)}
             >
               Gerenciar Imagens
             </Button>

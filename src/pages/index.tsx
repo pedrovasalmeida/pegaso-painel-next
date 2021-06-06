@@ -19,9 +19,14 @@ import {
   Box,
 } from '@chakra-ui/react';
 
+import { useAuth } from '../contexts/AuthContext';
+
 import { Input } from '../components/Form/Input';
 import { useRouter } from 'next/router';
 import { BsMoon, BsSun } from 'react-icons/bs';
+import { GetServerSideProps } from 'next';
+import nookies from 'nookies';
+import { IUser } from '../types/IEnterprise';
 
 type SignInFormData = {
   login: string;
@@ -34,12 +39,15 @@ const signInFormSchema = yup.object().shape({
 });
 
 export default function SignIn() {
+  const router = useRouter();
+
+  const { signIn, user, isLoadingSignIn } = useAuth();
+
   const { colorMode, toggleColorMode } = useColorMode();
   const { handleSubmit, register, formState } = useForm({
     resolver: yupResolver(signInFormSchema),
   });
   const { errors } = formState;
-  const router = useRouter();
   const toast = useToast();
 
   const color = useColorModeValue('gray.900', 'gray.50');
@@ -49,19 +57,28 @@ export default function SignIn() {
     login,
     password,
   }) => {
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    const loggedIn = await signIn({ email: login, password });
 
-    toast({
-      title: `Bem vindo, ${login}.`,
-      description: 'Entrando...',
-      status: 'success',
-      duration: 2000,
-      isClosable: true,
-    });
+    if (!loggedIn) {
+      toast({
+        title: `Usuário e/ou senha incorretos.`,
+        status: 'error',
+        duration: 1500,
+        isClosable: true,
+      });
+    } else {
+      toast({
+        title: `Login efetuado.`,
+        description: 'Entrando...',
+        status: 'success',
+        duration: 1500,
+        isClosable: true,
+      });
 
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
-    router.push('/dashboard');
+      setTimeout(() => {
+        router.push('/dashboard');
+      }, 500);
+    }
   };
 
   return (
@@ -143,7 +160,7 @@ export default function SignIn() {
             color="gray.50"
             _hover={{ bgColor: 'blue.800' }}
             size="lg"
-            isLoading={formState.isSubmitting}
+            isLoading={isLoadingSignIn}
           >
             Entrar
           </Button>
@@ -155,3 +172,29 @@ export default function SignIn() {
     </>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const cookies = nookies.get(ctx);
+
+  if (
+    cookies.hasOwnProperty('pegaso-user-email') ||
+    cookies.hasOwnProperty('pegaso-user-uid')
+  ) {
+    return {
+      redirect: {
+        destination: '/dashboard',
+        permanent: false,
+      },
+      props: {
+        userUid: cookies['pegaso-user-uid'],
+        email: cookies['pegaso-user-email'],
+      },
+    };
+  }
+
+  return {
+    props: {
+      userUid: null,
+    },
+  };
+};

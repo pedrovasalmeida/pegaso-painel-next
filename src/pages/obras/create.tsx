@@ -18,6 +18,8 @@ import {
   VStack,
   useColorModeValue,
   useBreakpointValue,
+  toast,
+  useToast,
 } from '@chakra-ui/react';
 
 import { Input } from '../../components/Form/Input';
@@ -28,63 +30,78 @@ import { queryClient } from '../../services/queryClient';
 import { TextArea } from '../../components/Form/TextArea';
 import Head from 'next/head';
 import { AddImageModal } from '../../components/Modal/AddImage';
+import { useRef, useState } from 'react';
+import LoginPage from './index';
+import { useAuth } from '../../contexts/AuthContext';
 
-type CreateUserFormData = {
+type CreateEnterpriseFormData = {
   name: string;
-  email: string;
-  password: string;
-  password_confirmation: string;
+  description: string;
+  shortDescription: string;
+  address: string;
+  banner: string;
 };
 
-const createUserFormSchema = yup.object().shape({
+const createEnterpriseFormSchema = yup.object().shape({
   name: yup.string().required('O nome é obrigatório'),
-  email: yup
-    .string()
-    .required('O e-mail é obrigatório')
-    .email('Inserir um e-mail válido (qualquer@coisa.com)'),
-  password: yup
-    .string()
-    .required('A senha é obrigatória (como você vai acessar?)')
-    .min(6, 'A senha precisa ter, no mínimo, 6 caracteres'),
-  password_confirmation: yup
-    .string()
-    .oneOf([null, yup.ref('password')], 'As senhas precisam ser iguais'),
+  description: yup.string().required('A descrição é obrigatória'),
+  shortDescription: yup.string().required('A descrição curta é obrigatória'),
+  address: yup.string().required('O endereço é obrigatório'),
 });
 
 export default function CreateEnterprise() {
+  const { isAuthenticated } = useAuth();
+
+  if (!isAuthenticated) {
+    return <LoginPage />;
+  }
+
+  const [creationLoading, setCreationLoading] = useState(false);
+
   const router = useRouter();
-
-  const createUser = useMutation(
-    async (user: CreateUserFormData) => {
-      const response = await api.post('users', {
-        user: {
-          ...user,
-          created_at: new Date(),
-        },
-      });
-
-      return response.data.user;
-    },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries('users');
-      },
-    }
-  );
+  const toast = useToast();
 
   const { register, handleSubmit, formState } = useForm({
-    resolver: yupResolver(createUserFormSchema),
+    resolver: yupResolver(createEnterpriseFormSchema),
   });
-
   const { errors } = formState;
 
-  const handleCreateUser: SubmitHandler<CreateUserFormData> = async (
-    values
-  ) => {
-    await createUser.mutateAsync(values);
+  const handleCreateEnterprise: SubmitHandler<CreateEnterpriseFormData> =
+    async (values) => {
+      setCreationLoading(true);
 
-    router.push('/users');
-  };
+      try {
+        const enterpriseData = {
+          banner: bannerRef.current?.value || 'invalid_link',
+          ...values,
+        };
+
+        await api.post('createEnterprise', enterpriseData);
+
+        toast({
+          title: 'Obra cadastrada.',
+          status: 'success',
+          duration: 2000,
+          isClosable: true,
+        });
+
+        setCreationLoading(false);
+
+        setTimeout(() => {
+          router.push('/obras/list');
+        }, 1000);
+      } catch (err) {
+        setCreationLoading(false);
+
+        toast({
+          title: 'Ocorreu um erro',
+          description: 'Tente novamente em alguns segundos.',
+          status: 'error',
+          duration: 2000,
+          isClosable: true,
+        });
+      }
+    };
 
   const isWideVersion = useBreakpointValue({
     base: false,
@@ -94,6 +111,8 @@ export default function CreateEnterprise() {
   const boxBgColor = useColorModeValue('gray.100', 'gray.800');
   const color = useColorModeValue('gray.900', 'gray.50');
   const cancelButtonBg = useColorModeValue('gray.200', 'gray.400');
+
+  const bannerRef = useRef(null);
 
   return (
     <>
@@ -114,7 +133,7 @@ export default function CreateEnterprise() {
             bg={boxBgColor}
             color={color}
             p={['6', '8']}
-            onSubmit={handleSubmit(handleCreateUser)}
+            onSubmit={handleSubmit(handleCreateEnterprise)}
           >
             <Heading size="lg" fontWeight="normal">
               Cadastrar uma obra
@@ -134,7 +153,7 @@ export default function CreateEnterprise() {
               <TextArea
                 name="description"
                 label="Descrição da obra"
-                error={errors.email}
+                error={errors.description}
                 {...register('description')}
               />
               {/* </SimpleGrid> */}
@@ -143,25 +162,24 @@ export default function CreateEnterprise() {
                   name="mini-description"
                   type="text"
                   label="Descrição curta"
-                  error={errors.password}
-                  {...register('mini-description')}
+                  error={errors.shortDescription}
+                  {...register('shortDescription')}
                 />
                 <Input
                   name="adress"
                   type="text"
                   label="Endereço"
-                  error={errors.password}
-                  {...register('adress')}
+                  error={errors.address}
+                  {...register('address')}
                 />
               </SimpleGrid>
-              <Input
-                display="none"
-                name="banner"
-                type="text"
-                error={errors.password}
-                {...register('banner')}
+              <Input display="none" name="banner" type="text" ref={bannerRef} />
+              <AddImageModal
+                singleFile
+                fullWidth
+                createEnterprisePage
+                inputRef={bannerRef}
               />
-              <AddImageModal fullWidth createEnterprisePage />
             </VStack>
 
             <Flex mt="8" justify={isWideVersion ? 'flex-end' : 'center'}>
@@ -182,7 +200,7 @@ export default function CreateEnterprise() {
                   bg="blue.700"
                   color="gray.50"
                   _hover={{ bgColor: 'blue.900' }}
-                  isLoading={formState.isSubmitting}
+                  isLoading={creationLoading}
                 >
                   Criar
                 </Button>

@@ -5,11 +5,13 @@ import { Image } from '@chakra-ui/image';
 import { Flex, HStack, Text } from '@chakra-ui/layout';
 import { useRouter } from 'next/router';
 import { RiImageAddLine } from 'react-icons/ri';
+import { IFinalEnterprise } from '../../types/IEnterprise';
 import { DetailsModal } from '../Modal/Details';
 import { EditEnterpriseModal } from '../Modal/EditEnterprise';
 import { RemoveModal } from '../Modal/Remove';
 
 interface CardProps {
+  project: IFinalEnterprise;
   isOnlyRemoveBox?: boolean;
   showDetailsButton?: boolean;
   showOnlyDetailsButton?: boolean;
@@ -17,6 +19,7 @@ interface CardProps {
 }
 
 export function Card({
+  project,
   isOnlyRemoveBox = false,
   showOnlyDetailsButton = false,
   showDetailsButton = false,
@@ -35,14 +38,14 @@ export function Card({
   return (
     <Flex
       direction="column"
-      minW="150"
       minH="250"
+      maxW="500px"
       bg={boxBgColor}
       borderRadius="8"
       p="4"
     >
       <Image
-        src="/images/image.jpeg"
+        src={project.banner}
         alt="alguma imagem"
         maxH="150px"
         mb="1"
@@ -57,22 +60,23 @@ export function Card({
         my="1"
         isTruncated
       >
-        Título da obra aqui
+        {project.name}
       </Text>
       <Text my="1" isTruncated>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatibus
-        ducimus, vitae ratione repellat eos, porro repellendus maxime facilis
-        dolor tenetur nemo magni provident?
+        {project.description}
       </Text>
       {!showOnlyDetailsButton && (
         <HStack w="100%" mt="2">
-          {!isOnlyRemoveBox && <EditEnterpriseModal />}
-          <RemoveModal />
+          {!isOnlyRemoveBox && <EditEnterpriseModal project={project} />}
+          <RemoveModal project={project} />
         </HStack>
       )}
 
       {showDetailsButton && (
-        <DetailsModal showOnlyDetailsButton={showOnlyDetailsButton} />
+        <DetailsModal
+          project={project}
+          showOnlyDetailsButton={showOnlyDetailsButton}
+        />
       )}
 
       {showImagesButton && (
@@ -88,8 +92,6 @@ export function Card({
           Gerenciar imagens
         </Button>
       )}
-
-      <>{/* <AddImageModal isOpen={isOpen} onClose={onClose} /> */}</>
     </Flex>
   );
 }
