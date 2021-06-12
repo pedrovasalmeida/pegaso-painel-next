@@ -39,53 +39,7 @@ let authChannel: BroadcastChannel;
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<IUser>(null);
   const [isLoadingSignIn, setIsLoadingSignIn] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    const cookies = parseCookies();
-    let userValid = false;
-
-    if (cookies.hasOwnProperty('pegaso-user-uid')) {
-      api
-        .post('/me', { data: { uid: cookies['pegaso-user-uid'] } })
-        .then((res) => {
-          const { userIsValid } = res.data;
-          userValid = userIsValid;
-        })
-        .catch(() => {
-          userValid = false;
-        });
-    }
-
-    return userValid;
-  });
-
-  const verifyUser = async () => {
-    const cookies = parseCookies();
-
-    if (cookies.hasOwnProperty('pegaso-user-uid')) {
-      api
-        .post('/me', { data: { uid: cookies['pegaso-user-uid'] } })
-        .then((res) => {
-          const { userIsValid } = res.data;
-
-          if (userIsValid) {
-            setUser({
-              email: cookies['pegaso-user-email'],
-              uid: cookies['pegaso-user-uid'],
-            });
-
-            setIsAuthenticated(true);
-          } else {
-            signOut();
-            setIsAuthenticated(false);
-            setUser(null);
-          }
-        });
-    } else {
-      signOut();
-      setIsAuthenticated(false);
-      setUser(null);
-    }
-  };
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const signIn = async ({ email, password }: SignInProps) => {
     setIsLoadingSignIn(true);
@@ -111,10 +65,18 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           path: '/',
         });
 
+        setCookie(undefined, 'pegaso-authenticated', 'true', {
+          path: '/',
+          maxAge: 60 * 60 * 2,
+        });
+
+        setIsAuthenticated(true);
+
         return true;
       })
       .catch(() => {
         signOut();
+        setIsAuthenticated(false);
         return false;
       });
 
@@ -139,6 +101,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     Router.push('/');
   };
 
+  const verifyUser = () => {};
+
+  // toda vez que acessar uma rota
+  // verificar se o usuário é válido
+
   useEffect(() => {
     authChannel = new BroadcastChannel('auth');
 
@@ -152,10 +119,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           break;
       }
     };
-  }, []);
-
-  useEffect(() => {
-    verifyUser();
   }, []);
 
   return (

@@ -21,8 +21,8 @@ interface DashboardProps {
 export default function Dashboard({ enterprisesSSR }: DashboardProps) {
   const { isAuthenticated } = useAuth();
 
+  console.log(`Autenticado: ${isAuthenticated}`);
   if (!isAuthenticated) {
-    console.log(`Autenticado: ${isAuthenticated}`);
     return <LoginPage />;
   }
 
