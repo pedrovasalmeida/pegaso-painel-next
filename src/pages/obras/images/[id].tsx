@@ -62,10 +62,11 @@ export default function HandleEnterpriseImages({
 
               <Text mt="4" fontSize="md">
                 {totalDeImagens <= 0 &&
-                  `Essa obra não tem imagens cadastradas.`}
+                  `${enterprise.name} não tem imagens cadastradas.`}
                 {totalDeImagens === 1 &&
                   `${totalDeImagens} imagem de ${enterprise.name}`}
-                {totalDeImagens > 1 && `${totalDeImagens} imagens da obra NOME`}
+                {totalDeImagens > 1 &&
+                  `${totalDeImagens} imagens de ${enterprise.name}`}
               </Text>
               {/* <Text fontSize="small" mt="1">
                   ID: {id}

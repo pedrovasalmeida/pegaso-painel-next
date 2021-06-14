@@ -11,8 +11,8 @@ export async function saveEnterpriseOrderChanges({
 }: SaveEnterpriseOrderChangesProps) {
   if (enterprises.length <= 0) return;
 
-  enterprises.forEach((enter) => {
-    firebase
+  enterprises.forEach(async (enter) => {
+    await firebase
       .firestore()
       .collection('enterprises')
       .doc(enter.id)

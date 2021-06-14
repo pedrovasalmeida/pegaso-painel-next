@@ -16,6 +16,7 @@ import 'firebase/storage';
 import { v4 as uuid } from 'uuid';
 import { api } from '../../services/api';
 import { uploadMultipleImages } from '../../hooks/uploadMultipleImages';
+import { createImages } from '../../hooks/createImages';
 
 interface HTMLInputEvent extends Event {
   target: HTMLInputElement & EventTarget;
@@ -75,35 +76,13 @@ export function AddImageModal({
     setUploadImage(true);
     try {
       if (!singleFile) {
-        const storageRef = firebase.storage().ref();
-
-        let arrayImagesUploaded = [];
-
-        files.forEach(async (file, index) => {
-          const name = `${uuid()}-${file.name}`;
-          const metadata = {
-            contentType: file.type,
-          };
-
-          const task = storageRef.child(name).put(file, metadata);
-
-          task
-            .then((snapshot) => {
-              console.log(snapshot);
-              return snapshot.ref.getDownloadURL();
-            })
-            .then((url) => {
-              arrayImagesUploaded.push({ id: uuid(), link: url });
-            })
-            .catch((err) => console.log(err));
+        files.forEach((file) => {
+          createImages({ file, enterpriseId: documentId }).then((res) => {
+            // console.log('resposta: ' + res);
+          });
         });
 
-        console.log(arrayImagesUploaded);
-
-        await uploadMultipleImages({
-          id: documentId,
-          images: arrayImagesUploaded,
-        });
+        await new Promise((resolve) => setTimeout(resolve, 1000));
 
         setUploadImage(false);
         return;
