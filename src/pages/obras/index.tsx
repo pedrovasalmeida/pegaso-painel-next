@@ -29,14 +29,10 @@ import { queryClient } from '../../services/queryClient';
 import { api } from '../../services/api';
 import LoginPage from '../index';
 import { useAuth } from '../../contexts/AuthContext';
+import { useCan } from '../../hooks/useValidate';
+import { GetServerSideProps } from 'next';
 
 export default function Enterprises() {
-  const { isAuthenticated } = useAuth();
-
-  if (!isAuthenticated) {
-    return <LoginPage />;
-  }
-
   const [page, setPage] = useState(1);
 
   const isWideVersion = useBreakpointValue({
@@ -75,3 +71,21 @@ export default function Enterprises() {
     </Flex>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const isUserValid = await useCan({ ctx });
+
+  if (!isUserValid) {
+    return {
+      props: {},
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {},
+  };
+};

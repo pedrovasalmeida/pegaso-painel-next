@@ -33,6 +33,8 @@ import { AddImageModal } from '../../components/Modal/AddImage';
 import { useRef, useState } from 'react';
 import LoginPage from './index';
 import { useAuth } from '../../contexts/AuthContext';
+import { GetServerSideProps } from 'next';
+import { useCan } from '../../hooks/useValidate';
 
 type CreateEnterpriseFormData = {
   name: string;
@@ -50,12 +52,6 @@ const createEnterpriseFormSchema = yup.object().shape({
 });
 
 export default function CreateEnterprise() {
-  const { isAuthenticated } = useAuth();
-
-  if (!isAuthenticated) {
-    return <LoginPage />;
-  }
-
   const [creationLoading, setCreationLoading] = useState(false);
 
   const router = useRouter();
@@ -69,6 +65,8 @@ export default function CreateEnterprise() {
   const handleCreateEnterprise: SubmitHandler<CreateEnterpriseFormData> =
     async (values) => {
       setCreationLoading(true);
+
+      console.log(`Banner ref: ${bannerRef.current.value}`);
 
       try {
         const enterpriseData = {
@@ -212,3 +210,21 @@ export default function CreateEnterprise() {
     </>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const isUserValid = await useCan({ ctx });
+
+  if (!isUserValid) {
+    return {
+      props: {},
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {},
+  };
+};

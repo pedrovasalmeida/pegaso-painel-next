@@ -25,7 +25,6 @@ export function Card({
   showDetailsButton = false,
   showImagesButton = false,
 }: CardProps) {
-  const id = 'ID_DA_OBRA';
   const color = useColorModeValue('gray.900', 'gray.50');
   const boxBgColor = useColorModeValue('gray.100', 'gray.700');
 
@@ -86,7 +85,7 @@ export function Card({
           bg="blue.700"
           color="gray.50"
           _hover={{ bgColor: 'blue.800' }}
-          onClick={() => handleManageImages(id)}
+          onClick={() => handleManageImages(project.id)}
         >
           <Icon as={RiImageAddLine} mr="1" fontSize="16" />
           Gerenciar imagens

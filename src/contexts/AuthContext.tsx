@@ -15,14 +15,14 @@ import { IUser } from '../types/IEnterprise';
 import Router from 'next/router';
 import { api } from '../services/api';
 
-type SignInProps = {
+type SignInData = {
   email: string;
   password: string;
 };
 
 interface AuthContextProps {
   user: IUser;
-  signIn: (data: SignInProps) => Promise<boolean>;
+  signIn: (data: SignInData) => Promise<void>;
   signOut: () => void;
   isLoadingSignIn: boolean;
   isAuthenticated: boolean;
@@ -37,64 +37,38 @@ const AuthContext = createContext({} as AuthContextProps);
 let authChannel: BroadcastChannel;
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [user, setUser] = useState<IUser>(null);
+  const [user, setUser] = useState<IUser | null>(null);
   const [isLoadingSignIn, setIsLoadingSignIn] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [authId, setAuthId] = useState<string | null>(null);
 
-  const signIn = async ({ email, password }: SignInProps) => {
-    setIsLoadingSignIn(true);
+  const signIn = async ({ email, password }: SignInData) => {
+    const { data } = await api.post('/signIn', { email, password });
 
-    const logged = await firebase
-      .auth()
-      .signInWithEmailAndPassword(email, password)
-      .then((res) => {
-        const loggedUser: IUser = {
-          uid: res.user.uid,
-          email: res.user.email,
-        };
+    if (data.statusCode === 400 || data.errorCode === 'cannot.sign_in') {
+      setUser(null);
+      setAuthId(null);
 
-        setUser(loggedUser);
-
-        setCookie(undefined, 'pegaso-user-email', loggedUser.email, {
-          maxAge: 60 * 60 * 24 * 7,
-          path: '/',
-        });
-
-        setCookie(undefined, 'pegaso-user-uid', loggedUser.uid, {
-          maxAge: 60 * 60 * 24 * 7,
-          path: '/',
-        });
-
-        setCookie(undefined, 'pegaso-authenticated', 'true', {
-          path: '/',
-          maxAge: 60 * 60 * 2,
-        });
-
-        setIsAuthenticated(true);
-
-        return true;
-      })
-      .catch(() => {
-        signOut();
-        setIsAuthenticated(false);
-        return false;
-      });
-
-    setIsLoadingSignIn(false);
-
-    if (logged) {
-      setIsAuthenticated(true);
-      return true;
+      destroyCookie(undefined, 'pegaso.auth');
+      Router.push('/');
+      throw new Error('Credenciais inválidas');
     }
 
-    setIsAuthenticated(false);
-    return false;
+    setCookie(undefined, 'pegaso.auth', data.authId, {
+      maxAge: 60 * 60 * 24, // 24 horas
+      path: '/',
+    });
+
+    setUser(data.user);
+    setAuthId(data.authId);
+
+    Router.push('/dashboard');
   };
 
   const signOut = () => {
-    destroyCookie(undefined, 'pegaso-user-email');
-    destroyCookie(undefined, 'pegaso-user-uid');
-    setIsAuthenticated(false);
+    destroyCookie(undefined, 'pegaso.auth');
+    setUser(null);
+    setAuthId(null);
 
     authChannel.postMessage('signOut');
 
@@ -102,9 +76,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   const verifyUser = () => {};
-
-  // toda vez que acessar uma rota
-  // verificar se o usuário é válido
 
   useEffect(() => {
     authChannel = new BroadcastChannel('auth');

@@ -15,6 +15,7 @@ import firebase from 'firebase/app';
 import 'firebase/storage';
 import { v4 as uuid } from 'uuid';
 import { api } from '../../services/api';
+import { uploadMultipleImages } from '../../hooks/uploadMultipleImages';
 
 interface HTMLInputEvent extends Event {
   target: HTMLInputElement & EventTarget;
@@ -36,7 +37,7 @@ interface ImagesProps {
 export function AddImageModal({
   fullWidth = false,
   createEnterprisePage = false,
-  singleFile = false,
+  singleFile = true,
   inputRef = null,
   documentId = null,
 }: AddImageModalProps) {
@@ -76,24 +77,32 @@ export function AddImageModal({
       if (!singleFile) {
         const storageRef = firebase.storage().ref();
 
+        let arrayImagesUploaded = [];
+
         files.forEach(async (file, index) => {
           const name = `${uuid()}-${file.name}`;
           const metadata = {
             contentType: file.type,
           };
+
           const task = storageRef.child(name).put(file, metadata);
+
           task
-            .then((snapshop) => {
-              return snapshop.ref.getDownloadURL();
+            .then((snapshot) => {
+              console.log(snapshot);
+              return snapshot.ref.getDownloadURL();
             })
             .then((url) => {
-              setImagesUploaded([...imagesUploaded, { id: uuid(), link: url }]);
+              arrayImagesUploaded.push({ id: uuid(), link: url });
             })
             .catch((err) => console.log(err));
         });
 
-        await api.post('createImages', {
-          data: { id: documentId, images: imagesUploaded },
+        console.log(arrayImagesUploaded);
+
+        await uploadMultipleImages({
+          id: documentId,
+          images: arrayImagesUploaded,
         });
 
         setUploadImage(false);
@@ -109,13 +118,15 @@ export function AddImageModal({
       const task = storageRef.child(name).put(files[0], metadata);
 
       task
-        .then((snapshop) => {
-          return snapshop.ref.getDownloadURL();
+        .then((snapshot) => {
+          console.log(snapshot);
+          return snapshot.ref.getDownloadURL();
         })
         .then((url) => {
           if (inputRef) {
             inputRef.current.value = url;
           }
+          console.log(`InputRef: ${inputRef.current.value}`);
         })
         .catch((err) => console.log(err));
 
@@ -129,7 +140,6 @@ export function AddImageModal({
 
       setUploadImage(false);
     } catch (err) {
-      console.log(err);
       toast({
         title: 'Ocorreu um erro.',
         description: 'Tente novamente.',
@@ -137,8 +147,12 @@ export function AddImageModal({
         duration: 2000,
         isClosable: true,
       });
-      setUploadImage(false);
     }
+    setUploadImage(false);
+  }
+
+  function consoleImages() {
+    console.log(imagesUploaded);
   }
 
   return (
@@ -176,6 +190,8 @@ export function AddImageModal({
             </>
           )}
         </Button>
+
+        <Button onClick={consoleImages}>Console</Button>
 
         <Button
           my="auto"

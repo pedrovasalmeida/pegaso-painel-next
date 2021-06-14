@@ -27,6 +27,9 @@ import { BsMoon, BsSun } from 'react-icons/bs';
 import { GetServerSideProps } from 'next';
 import nookies from 'nookies';
 import { IUser } from '../types/IEnterprise';
+import { useState } from 'react';
+import { validateUser } from '../hooks/validateUser';
+import { useCan } from '../hooks/useValidate';
 
 type SignInFormData = {
   login: string;
@@ -39,9 +42,10 @@ const signInFormSchema = yup.object().shape({
 });
 
 export default function SignIn() {
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const { signIn, user, isLoadingSignIn } = useAuth();
+  const { signIn } = useAuth();
 
   const { colorMode, toggleColorMode } = useColorMode();
   const { handleSubmit, register, formState } = useForm({
@@ -57,16 +61,11 @@ export default function SignIn() {
     login,
     password,
   }) => {
-    const loggedIn = await signIn({ email: login, password });
+    setIsLoading(true);
 
-    if (!loggedIn) {
-      toast({
-        title: `Usuário e/ou senha incorretos.`,
-        status: 'error',
-        duration: 1500,
-        isClosable: true,
-      });
-    } else {
+    try {
+      await signIn({ email: login, password });
+
       toast({
         title: `Login efetuado.`,
         description: 'Entrando...',
@@ -75,9 +74,15 @@ export default function SignIn() {
         isClosable: true,
       });
 
-      setTimeout(() => {
-        router.push('/dashboard');
-      }, 500);
+      setIsLoading(false);
+    } catch {
+      toast({
+        title: `Credenciais inválidas.`,
+        status: 'error',
+        duration: 1500,
+        isClosable: true,
+      });
+      setIsLoading(false);
     }
   };
 
@@ -160,7 +165,7 @@ export default function SignIn() {
             color="gray.50"
             _hover={{ bgColor: 'blue.800' }}
             size="lg"
-            isLoading={isLoadingSignIn}
+            isLoading={isLoading}
           >
             Entrar
           </Button>
@@ -174,27 +179,19 @@ export default function SignIn() {
 }
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const cookies = nookies.get(ctx);
+  const isUserValid = await useCan({ ctx });
 
-  if (
-    cookies.hasOwnProperty('pegaso-user-email') ||
-    cookies.hasOwnProperty('pegaso-user-uid')
-  ) {
+  if (isUserValid) {
     return {
+      props: {},
       redirect: {
         destination: '/dashboard',
         permanent: false,
-      },
-      props: {
-        userUid: cookies['pegaso-user-uid'],
-        email: cookies['pegaso-user-email'],
       },
     };
   }
 
   return {
-    props: {
-      userUid: null,
-    },
+    props: {},
   };
 };

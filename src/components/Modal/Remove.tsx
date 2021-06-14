@@ -18,6 +18,10 @@ import { RiCloseLine } from 'react-icons/ri';
 import { IFinalEnterprise } from '../../types/IEnterprise';
 import { api } from '../../services/api';
 import { useRouter } from 'next/router';
+import { deleteEnterprise } from '../../hooks/deleteEnterprise';
+import { getEnterprises } from '../../hooks/getEnterprises';
+import { fixDisplayOrders } from '../../hooks/fixDisplayOrders';
+import { saveEnterpriseOrderChanges } from '../../hooks/saveChangesEnterpriseOrder';
 
 interface RemoveModalProps {
   project: IFinalEnterprise;
@@ -34,22 +38,9 @@ export function RemoveModal({ project }: RemoveModalProps) {
   async function handleRemoveEnterprise() {
     setLoading(true);
 
-    try {
-      await api.delete('deleteEnterprise', { data: { id: project.id } });
+    const isEnterpriseDeleted = await deleteEnterprise({ id: project.id });
 
-      toast({
-        title: 'Obra removida.',
-        status: 'success',
-        duration: 2000,
-        isClosable: true,
-      });
-
-      setLoading(false);
-
-      setTimeout(() => {
-        router.reload();
-      }, 1000);
-    } catch {
+    if (!isEnterpriseDeleted) {
       toast({
         title: 'Ocorreu um erro ao remover a obra.',
         status: 'error',
@@ -58,7 +49,28 @@ export function RemoveModal({ project }: RemoveModalProps) {
       });
 
       setLoading(false);
+
+      return;
     }
+
+    const oldEnterprises = await getEnterprises();
+
+    const fixedEnterprises = fixDisplayOrders({ enterprises: oldEnterprises });
+
+    await saveEnterpriseOrderChanges({ enterprises: fixedEnterprises });
+
+    toast({
+      title: 'Obra removida.',
+      status: 'success',
+      duration: 2000,
+      isClosable: true,
+    });
+
+    setLoading(false);
+
+    setTimeout(() => {
+      router.reload();
+    }, 500);
 
     onClose();
   }

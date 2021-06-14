@@ -23,6 +23,6 @@ export interface IFinalEnterprise {
 }
 
 export type IUser = {
-  uid: string;
+  id: string;
   email: string;
-} | null;
+};

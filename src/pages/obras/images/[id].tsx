@@ -19,22 +19,25 @@ import { AddImageModal } from '../../../components/Modal/AddImage';
 import { useEnterpriseContext } from '../../../contexts/EnterprisesContext';
 import LoginPage from '../../index';
 import { useAuth } from '../../../contexts/AuthContext';
+import { GetServerSideProps } from 'next';
+import { useCan } from '../../../hooks/useValidate';
+import { IFinalEnterprise } from '../../../types/IEnterprise';
+import { getOneEnterprises } from '../../../hooks/getOneEnterprise';
 
-export default function UserList() {
-  const { isAuthenticated } = useAuth();
+interface HandleEnterpriseImagesProps {
+  enterprise: IFinalEnterprise;
+}
 
-  if (!isAuthenticated) {
-    return <LoginPage />;
-  }
-
-  const { singleEnterprise } = useEnterpriseContext();
+export default function HandleEnterpriseImages({
+  enterprise,
+}: HandleEnterpriseImagesProps) {
   const router = useRouter();
 
   const boxBgColor = useColorModeValue('gray.100', 'gray.800');
   const color = useColorModeValue('gray.900', 'gray.50');
   const cancelButtonBg = useColorModeValue('gray.200', 'gray.400');
 
-  const totalDeImagens = singleEnterprise?.images.length;
+  const totalDeImagens = enterprise.images.length;
 
   const isWideVersion = useBreakpointValue({
     base: false,
@@ -44,7 +47,7 @@ export default function UserList() {
   return (
     <>
       <Head>
-        <title>{singleEnterprise?.name} | Pégaso</title>
+        <title>{enterprise.name} | Pégaso</title>
       </Head>
 
       <Box minH="100vh">
@@ -61,7 +64,7 @@ export default function UserList() {
                 {totalDeImagens <= 0 &&
                   `Essa obra não tem imagens cadastradas.`}
                 {totalDeImagens === 1 &&
-                  `${totalDeImagens} imagem da obra NOME`}
+                  `${totalDeImagens} imagem de ${enterprise.name}`}
                 {totalDeImagens > 1 && `${totalDeImagens} imagens da obra NOME`}
               </Text>
               {/* <Text fontSize="small" mt="1">
@@ -70,24 +73,54 @@ export default function UserList() {
 
               {isWideVersion ? (
                 <HStack ml="auto" spacing="6" maxW="100%">
-                  <AddImageModal />
+                  <AddImageModal
+                    documentId={enterprise.id}
+                    singleFile={false}
+                  />
                   <RemoveImageModal removeAllImages />
                 </HStack>
               ) : (
                 <VStack maxW="100%" my="2">
-                  <AddImageModal fullWidth documentId={singleEnterprise?.id} />
+                  <AddImageModal
+                    fullWidth
+                    documentId={enterprise.id}
+                    singleFile={false}
+                  />
                   <RemoveImageModal removeAllImages fullWidth />
                 </VStack>
               )}
             </Flex>
 
-            <ListImages
-              projectsToList={singleEnterprise?.images}
-              showDetailsButton
-            />
+            <ListImages projectsToList={enterprise.images} showDetailsButton />
           </Flex>
         </Box>
       </Box>
     </>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const isUserValid = await useCan({ ctx });
+
+  if (!isUserValid) {
+    return {
+      props: {},
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
+    };
+  }
+
+  const { id } = ctx.query;
+
+  const parsedId = String(id);
+
+  const enterprise = await getOneEnterprises({ id: parsedId });
+
+  return {
+    props: {
+      enterprise,
+    },
+  };
+};

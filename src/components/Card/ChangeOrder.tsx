@@ -16,9 +16,15 @@ import { memo } from 'react';
 
 interface SortCardProps {
   enterprise: IEnterprise;
+  enterpriseLength: number;
+  handleChangeDisplayOrder: (direction: string, enterpriseId: string) => void;
 }
 
-export function SortCard({ enterprise }: SortCardProps) {
+export function SortCard({
+  enterprise,
+  enterpriseLength,
+  handleChangeDisplayOrder,
+}: SortCardProps) {
   const boxBgColor = useColorModeValue('gray.100', 'gray.700');
   const arrowsColor = useColorModeValue('gray.600', 'gray.50');
 
@@ -71,7 +77,11 @@ export function SortCard({ enterprise }: SortCardProps) {
             bg="blue.800"
             color="gray.50"
           >
-            <Button w="20px">
+            <Button
+              w="20px"
+              disabled={enterprise.displayOrder <= 1}
+              onClick={() => handleChangeDisplayOrder('up', enterprise.id)}
+            >
               <Icon
                 as={AiOutlineArrowUp}
                 fontSize={!isWideVersion ? '24' : '28'}
@@ -87,7 +97,12 @@ export function SortCard({ enterprise }: SortCardProps) {
             bg="blue.800"
             color="gray.50"
           >
-            <Button ml={!isWideVersion ? '3' : '4'} w="20px">
+            <Button
+              ml={!isWideVersion ? '3' : '4'}
+              w="20px"
+              disabled={enterprise.displayOrder >= enterpriseLength}
+              onClick={() => handleChangeDisplayOrder('down', enterprise.id)}
+            >
               <Icon
                 as={AiOutlineArrowDown}
                 fontSize={!isWideVersion ? '24' : '28'}

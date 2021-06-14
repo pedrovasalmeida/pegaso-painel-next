@@ -8,6 +8,7 @@ import {
   Text,
   Tooltip,
   useBreakpointValue,
+  useToast,
 } from '@chakra-ui/react';
 
 import { Header } from '../../components/Header';
@@ -17,30 +18,58 @@ import ListSort from '../../components/ListSort';
 import { useState } from 'react';
 import LoginPage from './index';
 import { useAuth } from '../../contexts/AuthContext';
+import { useCan } from '../../hooks/useValidate';
+import { GetServerSideProps } from 'next';
+import { getEnterprises } from '../../hooks/getEnterprises';
+import { IFinalEnterprise } from '../../types/IEnterprise';
+import { saveEnterpriseOrderChanges } from '../../hooks/saveChangesEnterpriseOrder';
 
-export default function SortEnterprises() {
-  const { isAuthenticated } = useAuth();
+interface SortEnterpriseProps {
+  enterprisesSSR: IFinalEnterprise[];
+}
 
-  if (!isAuthenticated) {
-    return <LoginPage />;
-  }
-
+export default function SortEnterprises({
+  enterprisesSSR,
+}: SortEnterpriseProps) {
   const [loadingSaveChanges, setLoadingSaveChanges] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
+  const [changedEnterprises, setChangedEnterprises] = useState<
+    IFinalEnterprise[]
+  >([]);
+
+  const toast = useToast();
 
   const isWideVersion = useBreakpointValue({
     base: false,
-    lg: true,
+    md: true,
   });
 
   async function handleSaveChanges() {
     setLoadingSaveChanges(true);
 
-    await new Promise((resolve, reject) => {
-      setTimeout(resolve, 2000);
-    });
+    try {
+      await saveEnterpriseOrderChanges({
+        enterprises: changedEnterprises,
+      });
 
-    setLoadingSaveChanges(false);
+      toast({
+        title: `Alterações salvas`,
+        status: 'success',
+        duration: 1500,
+        isClosable: true,
+      });
+
+      setLoadingSaveChanges(false);
+    } catch (err) {
+      toast({
+        title: `Ocorreu um erro`,
+        status: 'error',
+        duration: 1500,
+        isClosable: true,
+      });
+
+      setLoadingSaveChanges(false);
+    }
   }
 
   return (
@@ -62,7 +91,7 @@ export default function SortEnterprises() {
               align="center"
               mb="4"
               w="100%"
-              maxW="500px"
+              maxW={isWideVersion ? '500px' : '100%'}
             >
               <Heading h="10">Ordenar obras</Heading>
 
@@ -87,10 +116,42 @@ export default function SortEnterprises() {
               </Tooltip>
             </Flex>
 
-            <ListSort />
+            <ListSort
+              enterprises={enterprisesSSR}
+              hasChanges={setHasChanges}
+              setNewEnterprises={setChangedEnterprises}
+            />
           </Flex>
         </Box>
       </Box>
     </>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const isUserValid = await useCan({ ctx });
+
+  if (!isUserValid) {
+    return {
+      props: {},
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
+    };
+  }
+
+  const enterprisesSSR = await getEnterprises();
+
+  if (!enterprisesSSR) {
+    return {
+      props: {},
+    };
+  }
+
+  return {
+    props: {
+      enterprisesSSR,
+    },
+  };
+};

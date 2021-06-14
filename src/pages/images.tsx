@@ -9,6 +9,7 @@ import {
   Button,
   useBreakpointValue,
 } from '@chakra-ui/react';
+import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { TiPlus } from 'react-icons/ti';
@@ -18,16 +19,16 @@ import ListEnterprises from '../components/ListEnterprises';
 import { Sidebar } from '../components/Sidebar';
 import { useAuth } from '../contexts/AuthContext';
 import { useEnterpriseContext } from '../contexts/EnterprisesContext';
+import { getEnterprises } from '../hooks/getEnterprises';
+import { useCan } from '../hooks/useValidate';
+import { IFinalEnterprise } from '../types/IEnterprise';
 import LoginPage from './index';
 
-export default function Images() {
-  const { isAuthenticated } = useAuth();
+interface ImagesProps {
+  enterprisesSSR: IFinalEnterprise[];
+}
 
-  if (!isAuthenticated) {
-    return <LoginPage />;
-  }
-
-  const { enterprises } = useEnterpriseContext();
+export default function Images({ enterprisesSSR }: ImagesProps) {
   const router = useRouter();
 
   const isWideVersion = useBreakpointValue({
@@ -64,7 +65,7 @@ export default function Images() {
             >
               <Flex>
                 <ListEnterprises
-                  enterprises={enterprises}
+                  enterprises={enterprisesSSR}
                   showOnlyDetailsButton
                   showImagesButton
                 />
@@ -76,3 +77,31 @@ export default function Images() {
     </>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const isUserValid = await useCan({ ctx });
+
+  if (!isUserValid) {
+    return {
+      props: {},
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
+    };
+  }
+
+  const enterprisesSSR = await getEnterprises();
+
+  if (!enterprisesSSR) {
+    return {
+      props: {},
+    };
+  }
+
+  return {
+    props: {
+      enterprisesSSR,
+    },
+  };
+};

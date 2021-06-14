@@ -3,29 +3,25 @@ import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useAuth } from '../contexts/AuthContext';
+import nookies from 'nookies';
 
 import { Header } from '../components/Header';
 import ListEnterprises from '../components/ListEnterprises';
 import { Sidebar } from '../components/Sidebar';
 import LoginPage from './index';
 
-import firebase from 'firebase/app';
-import 'firebase/firestore';
-
 import { IFinalEnterprise, IUser } from '../types/IEnterprise';
+import { api, apiSsr } from '../services/api';
+
+import { validateUser } from '../hooks/validateUser';
+import { useCan } from '../hooks/useValidate';
+import { getEnterprises } from '../hooks/getEnterprises';
 
 interface DashboardProps {
   enterprisesSSR: IFinalEnterprise[];
 }
 
-export default function Dashboard({ enterprisesSSR }: DashboardProps) {
-  const { isAuthenticated } = useAuth();
-
-  console.log(`Autenticado: ${isAuthenticated}`);
-  if (!isAuthenticated) {
-    return <LoginPage />;
-  }
-
+export default function Dashboard({ enterprisesSSR = [] }: DashboardProps) {
   const router = useRouter();
 
   const isWideVersion = useBreakpointValue({
@@ -80,26 +76,30 @@ export default function Dashboard({ enterprisesSSR }: DashboardProps) {
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async () => {
-  const dataFb = await firebase.firestore().collection('enterprises').get();
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const isUserValid = await useCan({ ctx });
 
-  const enterprises = dataFb.docs.map((doc) => doc.data());
-
-  if (enterprises.length === 0) {
+  if (!isUserValid) {
     return {
-      props: {
-        enterprisesSSR: [],
+      props: {},
+      redirect: {
+        destination: '/',
+        permanent: false,
       },
     };
   }
 
-  const finalEnterprises = enterprises.sort(
-    (a, b) => a.displayOrder - b.displayOrder
-  );
+  const enterprisesSSR = await getEnterprises();
+
+  if (!enterprisesSSR) {
+    return {
+      props: {},
+    };
+  }
 
   return {
     props: {
-      enterprisesSSR: finalEnterprises,
+      enterprisesSSR,
     },
   };
 };
