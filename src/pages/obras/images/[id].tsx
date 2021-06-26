@@ -47,7 +47,7 @@ export default function HandleEnterpriseImages({
   return (
     <>
       <Head>
-        <title>{enterprise.name} | Pégaso</title>
+        <title>Pégaso | {enterprise.name}</title>
       </Head>
 
       <Box minH="100vh">

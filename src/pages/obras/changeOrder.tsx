@@ -75,7 +75,7 @@ export default function SortEnterprises({
   return (
     <>
       <Head>
-        <title>Obras | Pégaso</title>
+        <title>Pégaso | Obras</title>
       </Head>
 
       <Box minH="100vh">

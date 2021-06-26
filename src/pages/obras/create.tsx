@@ -115,7 +115,7 @@ export default function CreateEnterprise() {
   return (
     <>
       <Head>
-        <title>Criar obra | Pégaso</title>
+        <title>Pégaso | Cadastrar obra</title>
       </Head>
 
       <Box h="100vh">

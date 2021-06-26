@@ -43,7 +43,7 @@ export default function Images({ enterprisesSSR }: ImagesProps) {
   return (
     <>
       <Head>
-        <title>Imagens | Pégaso</title>
+        <title>Pégaso | Imagens</title>
       </Head>
 
       <Flex direction="column" minH="100vh">
@@ -55,22 +55,30 @@ export default function Images({ enterprisesSSR }: ImagesProps) {
           <Flex direction="column">
             <Heading>Gerenciar imagens</Heading>
 
-            <Text my="3" fontSize="md">
-              Selecione uma obra para adicionar ou remover imagens.
-            </Text>
-            <Flex
-              direction="column"
-              w={!isWideVersion ? '100%' : '100%'}
-              align="flex-end"
-            >
+            {enterprisesSSR.length < 1 ? (
               <Flex>
-                <ListEnterprises
-                  enterprises={enterprisesSSR}
-                  showOnlyDetailsButton
-                  showImagesButton
-                />
+                <Text>Não existem obras cadastradas.</Text>
               </Flex>
-            </Flex>
+            ) : (
+              <>
+                <Text my="3" fontSize="md">
+                  Selecione uma obra para adicionar ou remover imagens.
+                </Text>
+                <Flex
+                  direction="column"
+                  w={!isWideVersion ? '100%' : '100%'}
+                  align="flex-end"
+                >
+                  <Flex>
+                    <ListEnterprises
+                      enterprises={enterprisesSSR}
+                      showOnlyDetailsButton
+                      showImagesButton
+                    />
+                  </Flex>
+                </Flex>
+              </>
+            )}
           </Flex>
         </Flex>
       </Flex>
@@ -95,7 +103,9 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
   if (!enterprisesSSR) {
     return {
-      props: {},
+      props: {
+        enterprisesSSR: [],
+      },
     };
   }
 

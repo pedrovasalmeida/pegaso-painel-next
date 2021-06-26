@@ -25,7 +25,7 @@ export default function EnterpriseList({
   return (
     <>
       <Head>
-        <title>Obras | Pégaso</title>
+        <title>Pégaso | Obras</title>
       </Head>
 
       <Box minH="100vh">

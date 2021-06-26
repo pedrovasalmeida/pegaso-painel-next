@@ -36,7 +36,7 @@ export default function Dashboard({ enterprisesSSR = [] }: DashboardProps) {
   return (
     <>
       <Head>
-        <title>Dashboard | Pégaso</title>
+        <title>Pégaso | Dashboard</title>
       </Head>
 
       <Flex direction="column" minH="100vh">

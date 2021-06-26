@@ -89,7 +89,7 @@ export default function SignIn() {
   return (
     <>
       <Head>
-        <title>Login | Pégaso</title>
+        <title>Pégaso | Login</title>
       </Head>
 
       <Flex
@@ -101,7 +101,7 @@ export default function SignIn() {
       >
         <Image
           src="/images/pegaso-logo.png"
-          alt="Pégaso"
+          alt="Logo - Pégaso"
           mb="2"
           pointerEvents="none"
         />
