@@ -8,6 +8,8 @@ import {
 } from '@chakra-ui/react';
 import { RiMenuLine } from 'react-icons/ri';
 import { BsSun, BsMoon } from 'react-icons/bs';
+import NextNprogress from 'nextjs-progressbar';
+
 import { useSidebarDrawer } from '../../contexts/SidebarDrawerContext';
 
 import { Logo } from './Logo';
@@ -34,6 +36,13 @@ export function Header() {
       align="center"
       p={isWideVersion ? '4' : '2'}
     >
+      <NextNprogress
+        color="#2a88b0"
+        startPosition={0.6}
+        stopDelayMs={600}
+        height={3}
+        showOnShallow={true}
+      />
       {!isWideVersion && (
         <IconButton
           aria-label="Open navigation"
