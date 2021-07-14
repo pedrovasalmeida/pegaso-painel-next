@@ -20,5 +20,9 @@ export function getEnterprises({ enterprises }: GetEnterpriseProps) {
     };
   });
 
-  return formattedEnterprises;
+  const orderedEnterprises = formattedEnterprises.sort(
+    (a, b) => a.displayOrder - b.displayOrder
+  );
+
+  return orderedEnterprises;
 }
