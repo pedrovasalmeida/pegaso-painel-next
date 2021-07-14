@@ -56,6 +56,7 @@ export default function SignIn() {
 
   const color = useColorModeValue('gray.900', 'gray.50');
   const bgColor = useColorModeValue('gray.100', 'gray.800');
+  const formBgColor = useColorModeValue('white', 'gray.700');
 
   const handleSignIn: SubmitHandler<SignInFormData> = async ({
     login,
@@ -138,11 +139,13 @@ export default function SignIn() {
           flexDir="column"
           p={8}
           mx="5"
+          minH="376px"
           borderRadius={8}
-          bg={bgColor}
+          bgColor={formBgColor}
+          shadow="lg"
           onSubmit={handleSubmit(handleSignIn)}
         >
-          <Stack spacing="4">
+          <Stack spacing="8" mt="4" mb="8">
             <Input
               type="text"
               name="login"
@@ -160,7 +163,7 @@ export default function SignIn() {
           </Stack>
           <Button
             type="submit"
-            mt="6"
+            mt="auto"
             bgColor="blue.700"
             color="gray.50"
             _hover={{ bgColor: 'blue.800' }}

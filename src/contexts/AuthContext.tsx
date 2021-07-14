@@ -14,6 +14,7 @@ import 'firebase/auth';
 import { IUser } from '../types/IEnterprise';
 import Router from 'next/router';
 import { api } from '../services/api';
+import { setTimeout } from 'timers';
 
 type SignInData = {
   email: string;
@@ -84,7 +85,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       switch (message.data) {
         case 'signOut':
           signOut();
-          authChannel.close();
+          setTimeout(() => {
+            authChannel.close();
+          }, 1000);
           break;
         default:
           break;

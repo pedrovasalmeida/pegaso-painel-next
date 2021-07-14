@@ -20,13 +20,13 @@ import {
 import { Input } from './Form/Input';
 import { TextArea } from './Form/TextArea';
 import { LegacyRef, useRef, useState } from 'react';
-import { IFinalEnterprise } from '../types/IEnterprise';
+import { IEnterprise } from '../types/Enterprise';
 import { DetailsModal } from './Modal/Details';
 import { api } from '../services/api';
 import { InputProps } from '@chakra-ui/core';
 
 interface EditEnterpriseFormProps {
-  project: IFinalEnterprise;
+  project: IEnterprise;
   onClose: () => void;
 }
 
@@ -36,7 +36,7 @@ export function EditEnterpriseForm({
 }: EditEnterpriseFormProps) {
   const [isSaveLoading, setIsSaveLoading] = useState(false);
   const [edittedEnterprise, setEdditedEnterprise] =
-    useState<IFinalEnterprise | null>(null);
+    useState<IEnterprise | null>(null);
 
   const color = useColorModeValue('gray.900', 'gray.50');
   const inputBgColor = useColorModeValue('gray.100', 'gray.800');
@@ -49,56 +49,60 @@ export function EditEnterpriseForm({
   const addressRef = useRef(null);
   const bannerRef = useRef(null);
 
-  async function handleSaveEdit() {
-    setIsSaveLoading(true);
+  // async function handleSaveEdit() {
+  //   setIsSaveLoading(true);
 
-    try {
-      const edittedEnterpriseData: IFinalEnterprise = {
-        ref: project.ref,
-        id: project.id,
-        name: nameRef.current?.value || project.name,
-        description: descriptionRef.current?.value || project.description,
-        shortDescription:
-          shortDescriptionRef.current?.value || project.shortDescription,
-        address: addressRef.current?.value || project.address,
-        banner: bannerRef.current?.value || project.banner,
-        displayOrder: project.displayOrder,
-        images: project.images,
-        createdAt: project.createdAt,
-        updatedAt: new Date().toLocaleDateString('pt-BR', {
-          day: '2-digit',
-          month: 'numeric',
-          year: 'numeric',
-        }),
-      };
+  //   try {
+  //     const edittedEnterpriseData: IEnterprise = {
+  //       id: project.id,
+  //       name: nameRef.current?.value || project.name,
+  //       description: descriptionRef.current?.value || project.description,
+  //       shortDescription:
+  //         shortDescriptionRef.current?.value || project.shortDescription,
+  //       address: addressRef.current?.value || project.address,
+  //       banner: bannerRef.current?.value || project.banner,
+  //       displayOrder: project.displayOrder,
+  //       images: project.images,
+  //       createdAt: project.createdAt,
+  //       updatedAt: new Date().toLocaleDateString('pt-BR', {
+  //         day: '2-digit',
+  //         month: 'numeric',
+  //         year: 'numeric',
+  //       }),
+  //     };
 
-      await api.post('editEnterprise', edittedEnterpriseData);
+  //     await api.post('editEnterprise', edittedEnterpriseData);
 
-      toast({
-        title: 'Alterações salvas.',
-        status: 'success',
-        duration: 2000,
-        isClosable: true,
-        position: 'top-left',
-      });
+  //     toast({
+  //       title: 'Alterações salvas.',
+  //       status: 'success',
+  //       duration: 2000,
+  //       isClosable: true,
+  //       position: 'top-left',
+  //     });
 
-      setIsSaveLoading(false);
-      onClose();
+  //     setIsSaveLoading(false);
+  //     onClose();
 
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
-    } catch (err) {
-      toast({
-        title: 'Não foi possível salvar as alterações',
-        status: 'error',
-        duration: 2000,
-        isClosable: true,
-        position: 'top-left',
-      });
+  //     setTimeout(() => {
+  //       window.location.reload();
+  //     }, 1000);
+  //   } catch (err) {
+  //     toast({
+  //       title: 'Não foi possível salvar as alterações',
+  //       status: 'error',
+  //       duration: 2000,
+  //       isClosable: true,
+  //       position: 'top-left',
+  //     });
 
-      setIsSaveLoading(false);
-    }
+  //     setIsSaveLoading(false);
+  //   }
+  // }
+
+  function handleSaveEdit() {
+    // console.log
+    return;
   }
 
   return (

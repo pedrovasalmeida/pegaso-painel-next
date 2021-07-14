@@ -12,24 +12,34 @@ import { queryClient } from '../services/queryClient';
 
 import firebase from '../database/initFirebase';
 import { AuthProvider } from '../contexts/AuthContext';
+import NextNprogress from 'nextjs-progressbar';
 
 firebase();
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <SidebarDrawerProvider>
-          <ChakraProvider theme={theme}>
-            <EnterprisesProvider>
-              <Component {...pageProps} />
-            </EnterprisesProvider>
-          </ChakraProvider>
-        </SidebarDrawerProvider>
-      </AuthProvider>
+    <>
+      <NextNprogress
+        color="#2a88b0"
+        startPosition={0.6}
+        stopDelayMs={600}
+        height={3}
+        showOnShallow={true}
+      />
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <SidebarDrawerProvider>
+            <ChakraProvider theme={theme}>
+              <EnterprisesProvider>
+                <Component {...pageProps} />
+              </EnterprisesProvider>
+            </ChakraProvider>
+          </SidebarDrawerProvider>
+        </AuthProvider>
 
-      <ReactQueryDevtools />
-    </QueryClientProvider>
+        <ReactQueryDevtools />
+      </QueryClientProvider>
+    </>
   );
 }
 

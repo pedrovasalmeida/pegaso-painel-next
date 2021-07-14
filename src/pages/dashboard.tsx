@@ -1,24 +1,24 @@
+// Needed
 import { Flex, Heading, Button, useBreakpointValue } from '@chakra-ui/react';
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useAuth } from '../contexts/AuthContext';
-import nookies from 'nookies';
 
+// Components
 import { Header } from '../components/Header';
 import ListEnterprises from '../components/ListEnterprises';
 import { Sidebar } from '../components/Sidebar';
-import LoginPage from './index';
 
-import { IFinalEnterprise, IUser } from '../types/IEnterprise';
-import { api, apiSsr } from '../services/api';
+// Types
+import { IEnterprise } from '../types/Enterprise';
 
-import { validateUser } from '../hooks/validateUser';
+// Hooks
 import { useCan } from '../hooks/useValidate';
-import { getEnterprises } from '../hooks/getEnterprises';
+import { getEnterprises } from '../hooks/prismic/getEnterprises';
+import getPrismicClient from '../services/prismic';
 
 interface DashboardProps {
-  enterprisesSSR: IFinalEnterprise[];
+  enterprisesSSR: IEnterprise[];
 }
 
 export default function Dashboard({ enterprisesSSR = [] }: DashboardProps) {
@@ -89,17 +89,17 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     };
   }
 
-  const enterprisesSSR = await getEnterprises();
+  const prismic = getPrismicClient();
 
-  if (!enterprisesSSR) {
-    return {
-      props: {},
-    };
-  }
+  const { results } = await prismic.query('', { pageSize: 100 });
+
+  const enterprisesData: IEnterprise[] = getEnterprises({
+    enterprises: results,
+  });
 
   return {
     props: {
-      enterprisesSSR,
+      enterprisesSSR: enterprisesData,
     },
   };
 };

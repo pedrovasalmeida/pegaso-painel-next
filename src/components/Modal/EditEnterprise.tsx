@@ -16,12 +16,12 @@ import { ClassNames } from '@emotion/react';
 import { useState } from 'react';
 
 import { RiEditLine } from 'react-icons/ri';
-import { IFinalEnterprise } from '../../types/IEnterprise';
+import { IEnterprise } from '../../types/Enterprise';
 
 import { EditEnterpriseForm } from '../EditEnterpriseForm';
 
 interface EditEnterpriseModalProps {
-  project: IFinalEnterprise;
+  project: IEnterprise;
 }
 
 export function EditEnterpriseModal({ project }: EditEnterpriseModalProps) {

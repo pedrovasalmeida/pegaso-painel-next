@@ -20,10 +20,10 @@ import {
 import { useRouter } from 'next/router';
 import { TiPlus } from 'react-icons/ti';
 import { useEnterpriseContext } from '../../contexts/EnterprisesContext';
-import { IFinalEnterprise } from '../../types/IEnterprise';
+import { IEnterprise } from '../../types/Enterprise';
 
 interface DetailsModalProps {
-  project: IFinalEnterprise;
+  project: IEnterprise;
   showOnlyDetailsButton?: boolean;
   textFromDetailsButton?: string | null;
 }
@@ -51,7 +51,7 @@ export function DetailsModal({
       return;
     }
 
-    setSingleEnterpriseData(project);
+    // setSingleEnterpriseData(project);
     router.push(`/obras/images/${id}`);
   }
 
@@ -110,9 +110,9 @@ export function DetailsModal({
               <Divider my="1" />
               <Text my="1">{project.address}</Text>
               <Divider my="1" />
-              <Text my="1">Criado em {project.createdAt}</Text>
-              {project.createdAt !== project.updatedAt && (
-                <Text my="1">Atualizado em {project.updatedAt}</Text>
+              <Text my="1">Criado em {project.created_at}</Text>
+              {project.created_at !== project.updated_at && (
+                <Text my="1">Atualizado em {project.updated_at}</Text>
               )}
             </Flex>
           </ModalBody>

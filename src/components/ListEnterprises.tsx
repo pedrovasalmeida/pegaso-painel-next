@@ -13,7 +13,7 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { useEnterpriseContext } from '../contexts/EnterprisesContext';
 import { api } from '../services/api';
-import { IFinalEnterprise } from '../types/IEnterprise';
+import { IEnterprise } from '../types/Enterprise';
 
 import { Card } from './Card';
 import { CardSkeleton } from './Skeletons/CardSkeleton';
@@ -24,7 +24,7 @@ interface ListEnterprisesProps {
   showDetailsButton?: boolean;
   showOnlyDetailsButton?: boolean;
   showImagesButton?: boolean;
-  enterprises: IFinalEnterprise[];
+  enterprises: IEnterprise[];
 }
 
 export default function ListEnterprises({
@@ -42,6 +42,7 @@ export default function ListEnterprises({
     if (!loadingEnterprisesData) {
       return <Text>Não existem obras</Text>;
     }
+
     return (
       <HStack w="100%" spacing="6" my="4">
         <SimpleGrid minChildWidth="240px" spacing={['6', '8']} w="100%">

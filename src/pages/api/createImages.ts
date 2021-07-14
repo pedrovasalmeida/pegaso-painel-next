@@ -1,67 +1,39 @@
+import axios from 'axios';
+import FormData from 'form-data';
 import { NextApiRequest, NextApiResponse } from 'next';
+import path from 'path';
+import fs from 'fs';
 
-import { IFinalEnterprise } from '../../types/IEnterprise';
-
-import firebase from 'firebase/app';
-import 'firebase/firestore';
-
-type Enterprises = {
-  ref: {
-    id: string;
-  };
-  data: IFinalEnterprise;
-};
+interface RequestBody {
+  files: File[];
+  enterpriseId: string;
+}
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-  try {
-    // enviar imagens para firebase e adicionar na obra
-  } catch (err) {
-    console.log(err);
-    return res.status(400);
-  }
+  let data = new FormData();
+  const { files, enterpriseId }: RequestBody = req.body;
+  const image = path.resolve('src', 'assets', 'pegaso-logo.png');
+
+  data.append('image', fs.createReadStream(files[0].name));
+
+  axios({
+    method: 'post',
+    url: `https://api.imgur.com/3/upload`,
+    headers: {
+      Authorization: `Client-ID ${process.env.CLIENT_ID}`,
+      ...data.getHeaders(),
+    },
+    data,
+  })
+    .then(function (resp) {
+      console.log(resp.data);
+    })
+    .catch(function (error) {
+      // console.log(error);
+      console.log(error.message);
+    });
+
+  return res.json({
+    message: 'Requisição feita',
+  });
 };
-
-// export default async (req: NextApiRequest, res: NextApiResponse) => {
-//   try {
-//     const faunaEnterprises = await fauna.query(
-//       q.Map(
-//         q.Paginate(q.Documents(q.Collection('enterprises'))),
-//         q.Lambda('X', q.Get(q.Var('X')))
-//       )
-//     );
-
-//     if (faunaEnterprises['data'].length < 1) {
-//       return res.status(403).json({
-//         error: 'Não existem obras cadastradas',
-//         errorCode: 'cannot.get.enterprises',
-//       });
-//     }
-
-//     const enterprises = faunaEnterprises['data'].map((ent: Enterprises) => {
-//       return {
-//         ref: ent.ref.id,
-//         id: ent.data.id,
-//         name: ent.data.name,
-//         banner: ent.data.banner,
-//         description: ent.data.description,
-//         shortDescription: ent.data.shortDescription,
-//         address: ent.data.address,
-//         displayOrder: ent.data.displayOrder,
-//         createdAt: ent.data.createdAt,
-//         updatedAt: ent.data.updatedAt,
-//         images: ent.data.images.map((image) => ({
-//           id: image.id,
-//           link: image.link,
-//           imageDisplayOrder: image.imageDisplayOrder,
-//         })),
-//       };
-//     });
-
-//     return res.status(200).json({ enterprises });
-//   } catch {
-//     return res.status(400).json({
-//       error: 'Problema ao obter obras.',
-//       errorCode: 'cannot.get.enterprises',
-//     });
-//   }
-// };

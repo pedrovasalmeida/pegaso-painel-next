@@ -15,7 +15,7 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { RiCloseLine } from 'react-icons/ri';
-import { IFinalEnterprise } from '../../types/IEnterprise';
+import { IEnterprise } from '../../types/Enterprise';
 import { api } from '../../services/api';
 import { useRouter } from 'next/router';
 import { deleteEnterprise } from '../../hooks/deleteEnterprise';
@@ -24,7 +24,7 @@ import { fixDisplayOrders } from '../../hooks/fixDisplayOrders';
 import { saveEnterpriseOrderChanges } from '../../hooks/saveChangesEnterpriseOrder';
 
 interface RemoveModalProps {
-  project: IFinalEnterprise;
+  project: IEnterprise;
 }
 
 export function RemoveModal({ project }: RemoveModalProps) {

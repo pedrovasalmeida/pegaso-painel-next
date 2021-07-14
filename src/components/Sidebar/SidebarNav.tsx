@@ -1,4 +1,12 @@
-import { Stack } from '@chakra-ui/layout';
+import {
+  Stack,
+  useBreakpointValue,
+  Flex,
+  Icon,
+  IconButton,
+  Text,
+  useColorMode,
+} from '@chakra-ui/react';
 import {
   RiDashboardLine,
   RiFileAddLine,
@@ -6,17 +14,26 @@ import {
   RiImageAddFill,
 } from 'react-icons/ri';
 
+import { BsSun, BsMoon } from 'react-icons/bs';
+
 import { AiOutlineSortAscending } from 'react-icons/ai';
 
 import { NavLink } from './NavLink';
 import { NavSection } from './NavSection';
 
 export function SidebarNav() {
+  const { colorMode } = useColorMode();
+
   return (
     <Stack spacing={['8', '10', '12']} align="flex-start">
       <NavSection title="Geral">
         <NavLink href="/dashboard" icon={RiDashboardLine}>
           Inicio
+        </NavLink>
+      </NavSection>
+      <NavSection title="Tema">
+        <NavLink href={null} icon={colorMode === 'dark' ? BsMoon : BsSun}>
+          {colorMode === 'dark' ? 'Escuro' : 'Claro'}
         </NavLink>
       </NavSection>
       <NavSection title="Obras">

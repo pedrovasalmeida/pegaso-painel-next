@@ -5,13 +5,13 @@ import { Image } from '@chakra-ui/image';
 import { Flex, HStack, Text } from '@chakra-ui/layout';
 import { useRouter } from 'next/router';
 import { RiImageAddLine } from 'react-icons/ri';
-import { IFinalEnterprise } from '../../types/IEnterprise';
+import { IEnterprise } from '../../types/Enterprise';
 import { DetailsModal } from '../Modal/Details';
 import { EditEnterpriseModal } from '../Modal/EditEnterprise';
 import { RemoveModal } from '../Modal/Remove';
 
 interface CardProps {
-  project: IFinalEnterprise;
+  project: IEnterprise;
   isOnlyRemoveBox?: boolean;
   showDetailsButton?: boolean;
   showOnlyDetailsButton?: boolean;

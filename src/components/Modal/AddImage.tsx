@@ -74,65 +74,25 @@ export function AddImageModal({
 
   async function handleUploadImages() {
     setUploadImage(true);
-    try {
-      if (!singleFile) {
-        files.forEach((file) => {
-          createImages({ file, enterpriseId: documentId }).then((res) => {
-            // console.log('resposta: ' + res);
-          });
-        });
 
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-
-        setUploadImage(false);
-        return;
-      }
-
-      const storageRef = firebase.storage().ref();
-      const name = `${uuid()}-banner-${files[0].name}`;
-      const metadata = {
-        contentType: files[0].type,
-      };
-
-      const task = storageRef.child(name).put(files[0], metadata);
-
-      task
-        .then((snapshot) => {
-          console.log(snapshot);
-          return snapshot.ref.getDownloadURL();
-        })
-        .then((url) => {
-          if (inputRef) {
-            inputRef.current.value = url;
-          }
-          console.log(`InputRef: ${inputRef.current.value}`);
-        })
-        .catch((err) => console.log(err));
-
-      toast({
-        title: 'Banner enviado.',
-        description: 'Finalize a criação da obra pelo botão "Criar".',
-        status: 'success',
-        duration: 2000,
-        isClosable: true,
-      });
-
+    if (files.length < 1) {
       setUploadImage(false);
-    } catch (err) {
-      toast({
-        title: 'Ocorreu um erro.',
-        description: 'Tente novamente.',
-        status: 'error',
-        duration: 2000,
-        isClosable: true,
-      });
+      return;
     }
+
+    await createImages({ files, enterpriseId: documentId });
+
     setUploadImage(false);
   }
 
   function consoleImages() {
     console.log(imagesUploaded);
   }
+
+  useEffect(() => {
+    console.log('Mudou: ');
+    console.log(files);
+  }, [files]);
 
   return (
     <Flex width="100%">
