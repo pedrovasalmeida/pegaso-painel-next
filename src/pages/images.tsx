@@ -21,11 +21,11 @@ import { useAuth } from '../contexts/AuthContext';
 import { useEnterpriseContext } from '../contexts/EnterprisesContext';
 import { getEnterprises } from '../hooks/getEnterprises';
 import { useCan } from '../hooks/useValidate';
-import { IFinalEnterprise } from '../types/IEnterprise';
+import { IEnterprise } from '../types/Enterprise';
 import LoginPage from './index';
 
 interface ImagesProps {
-  enterprisesSSR: IFinalEnterprise[];
+  enterprisesSSR: IEnterprise[];
 }
 
 export default function Images({ enterprisesSSR }: ImagesProps) {
