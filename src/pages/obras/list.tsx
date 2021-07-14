@@ -6,7 +6,7 @@ import { Header } from '../../components/Header';
 import { Sidebar } from '../../components/Sidebar';
 import ListEnterprises from '../../components/ListEnterprises';
 import { GetServerSideProps } from 'next';
-import { IFinalEnterprise } from '../../types/IEnterprise';
+import { IEnterprise } from '../../types/Enterprise';
 import LoginPage from './index';
 
 import firebase from 'firebase/app';
@@ -16,7 +16,7 @@ import { useCan } from '../../hooks/useValidate';
 import { getEnterprises } from '../../hooks/getEnterprises';
 
 interface EnterpriseProps {
-  enterprisesSSR: IFinalEnterprise[];
+  enterprisesSSR: IEnterprise[];
 }
 
 export default function EnterpriseList({
