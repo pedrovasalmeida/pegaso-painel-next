@@ -85,15 +85,6 @@ export function AddImageModal({
     setUploadImage(false);
   }
 
-  function consoleImages() {
-    console.log(imagesUploaded);
-  }
-
-  useEffect(() => {
-    console.log('Mudou: ');
-    console.log(files);
-  }, [files]);
-
   return (
     <Flex width="100%">
       <Input
@@ -129,8 +120,6 @@ export function AddImageModal({
             </>
           )}
         </Button>
-
-        <Button onClick={consoleImages}>Console</Button>
 
         <Button
           my="auto"

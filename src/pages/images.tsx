@@ -19,8 +19,9 @@ import ListEnterprises from '../components/ListEnterprises';
 import { Sidebar } from '../components/Sidebar';
 import { useAuth } from '../contexts/AuthContext';
 import { useEnterpriseContext } from '../contexts/EnterprisesContext';
-import { getEnterprises } from '../hooks/getEnterprises';
+import { getEnterprises } from '../hooks/prismic/getEnterprises';
 import { useCan } from '../hooks/useValidate';
+import getPrismicClient from '../services/prismic';
 import { IEnterprise } from '../types/Enterprise';
 import LoginPage from './index';
 
@@ -64,19 +65,12 @@ export default function Images({ enterprisesSSR }: ImagesProps) {
                 <Text my="3" fontSize="md">
                   Selecione uma obra para adicionar ou remover imagens.
                 </Text>
-                <Flex
-                  direction="column"
-                  w={!isWideVersion ? '100%' : '100%'}
-                  align="flex-end"
-                >
-                  <Flex>
-                    <ListEnterprises
-                      enterprises={enterprisesSSR}
-                      showOnlyDetailsButton
-                      showImagesButton
-                    />
-                  </Flex>
-                </Flex>
+
+                <ListEnterprises
+                  enterprises={enterprisesSSR}
+                  showOnlyDetailsButton
+                  showImagesButton
+                />
               </>
             )}
           </Flex>
@@ -99,19 +93,17 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     };
   }
 
-  const enterprisesSSR = await getEnterprises();
+  const prismic = getPrismicClient();
 
-  if (!enterprisesSSR) {
-    return {
-      props: {
-        enterprisesSSR: [],
-      },
-    };
-  }
+  const { results } = await prismic.query('', { pageSize: 100 });
+
+  const enterprisesData: IEnterprise[] = getEnterprises({
+    enterprises: results,
+  });
 
   return {
     props: {
-      enterprisesSSR,
+      enterprisesSSR: enterprisesData,
     },
   };
 };

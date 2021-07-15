@@ -16,6 +16,7 @@ import { IEnterprise } from '../types/Enterprise';
 import { useCan } from '../hooks/useValidate';
 import { getEnterprises } from '../hooks/prismic/getEnterprises';
 import getPrismicClient from '../services/prismic';
+import { useEffect } from 'react';
 
 interface DashboardProps {
   enterprisesSSR: IEnterprise[];
@@ -23,6 +24,10 @@ interface DashboardProps {
 
 export default function Dashboard({ enterprisesSSR = [] }: DashboardProps) {
   const router = useRouter();
+
+  useEffect(() => {
+    console.log(enterprisesSSR);
+  }, [enterprisesSSR]);
 
   const isWideVersion = useBreakpointValue({
     base: false,
@@ -62,13 +67,11 @@ export default function Dashboard({ enterprisesSSR = [] }: DashboardProps) {
               </Button>
             </Flex>
 
-            <Flex w="100%">
-              <ListEnterprises
-                enterprises={enterprisesSSR}
-                showDetailsButton
-                showOnlyDetailsButton
-              />
-            </Flex>
+            <ListEnterprises
+              enterprises={enterprisesSSR}
+              showDetailsButton
+              showOnlyDetailsButton
+            />
           </Flex>
         </Flex>
       </Flex>

@@ -82,6 +82,7 @@ export function RemoveImageModal({
           fontSize="sm"
           width={fullWidth ? '100%' : '180px'}
           onClick={onOpen}
+          px="8"
         >
           <Icon as={RiCloseLine} mr="1" fontSize="16" />
           Remover tudo

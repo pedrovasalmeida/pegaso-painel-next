@@ -38,7 +38,7 @@ export default function ListEnterprises({
   const { loadingEnterprisesData } = useEnterpriseContext();
   const router = useRouter();
 
-  if (enterprises.length === 0) {
+  if (enterprises?.length === 0) {
     if (!loadingEnterprisesData) {
       return <Text>Não existem obras</Text>;
     }
@@ -57,19 +57,17 @@ export default function ListEnterprises({
   }
 
   return (
-    <HStack w="100%" spacing="6" my="4">
-      <SimpleGrid minChildWidth="280px" spacing="6" w="100%">
-        {enterprises.map((project, index) => (
-          <Card
-            key={project.id}
-            isOnlyRemoveBox={isOnlyRemoveBox}
-            showDetailsButton={showDetailsButton}
-            showOnlyDetailsButton={showOnlyDetailsButton}
-            showImagesButton={showImagesButton}
-            project={project}
-          />
-        ))}
-      </SimpleGrid>
-    </HStack>
+    <Flex flexWrap="wrap" w="100%" mt="4">
+      {enterprises.map((project, index) => (
+        <Card
+          key={project.id}
+          isOnlyRemoveBox={isOnlyRemoveBox}
+          showDetailsButton={showDetailsButton}
+          showOnlyDetailsButton={showOnlyDetailsButton}
+          showImagesButton={showImagesButton}
+          project={project}
+        />
+      ))}
+    </Flex>
   );
 }

@@ -1,22 +1,16 @@
 import Head from 'next/head';
 
-import { Box, Flex, Heading } from '@chakra-ui/react';
+import { Box, Text } from '@chakra-ui/react';
 
 import { Header } from '../../components/Header';
 import { Sidebar } from '../../components/Sidebar';
-import ListEnterprises from '../../components/ListEnterprises';
 import { GetServerSideProps } from 'next';
-import { IEnterprise } from '../../types/Enterprise';
-import LoginPage from './index';
 
-import firebase from 'firebase/app';
 import 'firebase/firestore';
-import { useAuth } from '../../contexts/AuthContext';
 import { useCan } from '../../hooks/useValidate';
-import { getEnterprises } from '../../hooks/getEnterprises';
 
 interface EnterpriseProps {
-  enterprisesSSR: IEnterprise[];
+  enterprisesSSR: any;
 }
 
 export default function EnterpriseList({
@@ -34,11 +28,15 @@ export default function EnterpriseList({
         <Box display="flex" w="100%" my="6" maxWidth={1600} mx="auto" px="4">
           <Sidebar />
 
-          <Flex direction="column" w="100%">
+          <Text>Página offline.</Text>
+          {/* <Flex direction="column" w="100%">
             <Heading h="10">Gerenciar obras</Heading>
 
-            <ListEnterprises enterprises={enterprisesSSR} showDetailsButton />
-          </Flex>
+            <ListEnterprises
+              enterprises={enterprisesSSR?.data}
+              showDetailsButton
+            />
+          </Flex> */}
         </Box>
       </Box>
     </>
@@ -58,17 +56,17 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     };
   }
 
-  const enterprisesSSR = await getEnterprises();
+  // const prismic = getPrismicClient();
 
-  if (!enterprisesSSR) {
-    return {
-      props: {},
-    };
-  }
+  // const { results } = await prismic.query('', { pageSize: 100 });
+
+  // const enterprisesData: IEnterprise[] = getEnterprises({
+  //   enterprises: results,
+  // });
 
   return {
     props: {
-      enterprisesSSR,
+      enterprisesSSR: [],
     },
   };
 };

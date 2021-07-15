@@ -16,20 +16,26 @@ import Head from 'next/head';
 import { RemoveImageModal } from '../../../components/Modal/RemoveImage';
 import { useRouter } from 'next/router';
 import { AddImageModal } from '../../../components/Modal/AddImage';
-import { useEnterpriseContext } from '../../../contexts/EnterprisesContext';
-import LoginPage from '../../index';
-import { useAuth } from '../../../contexts/AuthContext';
 import { GetServerSideProps } from 'next';
 import { useCan } from '../../../hooks/useValidate';
-import { IFinalEnterprise } from '../../../types/IEnterprise';
-import { getOneEnterprises } from '../../../hooks/getOneEnterprise';
+import { IEnterprise } from '../../../types/Enterprise';
+import getPrismicClient from '../../../services/prismic';
+import { useEffect } from 'react';
+import { Document } from '@prismicio/client/types/documents';
 
 interface HandleEnterpriseImagesProps {
-  enterprise: IFinalEnterprise;
+  enterprise: Document;
+  id: string;
+  images: {
+    id: string;
+    link: string;
+  }[];
 }
 
 export default function HandleEnterpriseImages({
-  enterprise,
+  enterprise = null,
+  id = null,
+  images = null,
 }: HandleEnterpriseImagesProps) {
   const router = useRouter();
 
@@ -37,7 +43,9 @@ export default function HandleEnterpriseImages({
   const color = useColorModeValue('gray.900', 'gray.50');
   const cancelButtonBg = useColorModeValue('gray.200', 'gray.400');
 
-  const totalDeImagens = enterprise.images.length;
+  // const imagesLength = enterprise?.images?.length;
+
+  console.log(enterprise);
 
   const isWideVersion = useBreakpointValue({
     base: false,
@@ -47,7 +55,11 @@ export default function HandleEnterpriseImages({
   return (
     <>
       <Head>
-        <title>Pégaso | {enterprise.name}</title>
+        <title>
+          {enterprise.data.name[0].text
+            ? `Pégaso | ${enterprise.data.name[0].text}`
+            : 'Pégaso'}
+        </title>
       </Head>
 
       <Box minH="100vh">
@@ -58,41 +70,59 @@ export default function HandleEnterpriseImages({
 
           <Flex direction="column" w="100%">
             <Flex direction="column">
-              <Heading fontSize="24">Gerenciar imagens</Heading>
-
-              <Text mt="4" fontSize="md">
-                {totalDeImagens <= 0 &&
-                  `${enterprise.name} não tem imagens cadastradas.`}
-                {totalDeImagens === 1 &&
-                  `${totalDeImagens} imagem de ${enterprise.name}`}
-                {totalDeImagens > 1 &&
-                  `${totalDeImagens} imagens de ${enterprise.name}`}
-              </Text>
-              {/* <Text fontSize="small" mt="1">
-                  ID: {id}
-                </Text> */}
-
               {isWideVersion ? (
-                <HStack ml="auto" spacing="6" maxW="100%">
+                <HStack spacing="6" maxW="100%">
+                  <Flex direction="column" w="100%">
+                    <Heading fontSize="24" w="100%">
+                      Gerenciar imagens
+                    </Heading>
+                    <Text fontSize="small" mt="1">
+                      ID: {id}
+                    </Text>
+                  </Flex>
                   <AddImageModal
-                    documentId={enterprise.id}
+                    documentId={enterprise?.uid}
                     singleFile={false}
                   />
                   <RemoveImageModal removeAllImages />
                 </HStack>
               ) : (
                 <VStack maxW="100%" my="2">
+                  <Heading fontSize="24">Gerenciar imagens</Heading>
+                  <Text fontSize="small" mt="1">
+                    ID: {id}
+                  </Text>
                   <AddImageModal
                     fullWidth
-                    documentId={enterprise.id}
+                    documentId={enterprise?.uid}
                     singleFile={false}
                   />
                   <RemoveImageModal removeAllImages fullWidth />
                 </VStack>
               )}
+
+              {!enterprise?.data.images.length ? (
+                <Text mt="4" fontSize="md">
+                  Não existem imagens para essa obra.
+                </Text>
+              ) : (
+                <>
+                  <Text mt="4" fontSize="md">
+                    {enterprise?.data.images.length <= 0 &&
+                      `${enterprise?.data.name} não tem imagens cadastradas.`}
+                    {enterprise?.data.images.length === 1 &&
+                      `${enterprise?.data.images.length} imagem de ${enterprise?.data.name[0].text}`}
+                    {enterprise?.data.images.length > 1 &&
+                      `${enterprise?.data.images.length} imagens de ${enterprise?.data.name[0].text}`}
+                  </Text>
+                </>
+              )}
             </Flex>
 
-            <ListImages projectsToList={enterprise.images} showDetailsButton />
+            <ListImages
+              projectsToList={enterprise?.data.images}
+              showDetailsButton
+            />
           </Flex>
         </Box>
       </Box>
@@ -113,15 +143,43 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     };
   }
 
+  const prismic = getPrismicClient();
   const { id } = ctx.query;
 
-  const parsedId = String(id);
+  const { results } = await prismic.query('', { pageSize: 100 });
+  const findedEnterprise = results.find(
+    (enterprise) => enterprise.uid === String(id)
+  );
 
-  const enterprise = await getOneEnterprises({ id: parsedId });
+  // const enterprise: IEnterprise = {
+  //   id: findedEnterprise.uid,
+  //   address: findedEnterprise.data.address[0].text,
+  //   banner: findedEnterprise.data.banner.url,
+  //   created_at: findedEnterprise.data.created_at,
+  //   updated_at: findedEnterprise.data.updated_at,
+  //   shortDescription: findedEnterprise.data.short_description[0].text,
+  //   description: findedEnterprise.data.description[0].text,
+  //   displayOrder: findedEnterprise.data.displayOrder,
+  //   name: findedEnterprise.data.name[0].text,
+  //   images: findedEnterprise.data.images,
+  // };
 
   return {
     props: {
-      enterprise,
+      id,
+      enterprise: findedEnterprise,
     },
   };
+
+  // const { results } = await prismic.getByID('', { pageSize: 100 });
+
+  // const enterprisesData: IEnterprise[] = getEnterprises({
+  //   enterprises: results,
+  // });
+
+  // return {
+  //   props: {
+  //     enterprisesSSR: enterprisesData,
+  //   },
+  // };
 };

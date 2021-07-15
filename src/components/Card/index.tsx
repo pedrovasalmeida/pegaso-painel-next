@@ -37,11 +37,13 @@ export function Card({
   return (
     <Flex
       direction="column"
-      minH="250"
-      maxW="500px"
+      minW="300px"
+      maxW="300px"
       bg={boxBgColor}
       borderRadius="8"
       p="4"
+      mr="4"
+      mb="4"
     >
       <Image
         src={project.banner}

@@ -40,9 +40,9 @@ export function SidebarNav() {
         <NavLink href="/obras/create" icon={RiFileAddLine}>
           Adicionar obra
         </NavLink>
-        <NavLink href="/obras/list" icon={RiFileListLine}>
+        {/* <NavLink href="/obras/list" icon={RiFileListLine}>
           Gerenciar obras
-        </NavLink>
+        </NavLink> */}
         <NavLink href="/obras/changeOrder" icon={AiOutlineSortAscending}>
           Ordenar obras
         </NavLink>
